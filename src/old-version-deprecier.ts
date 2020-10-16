@@ -8,7 +8,6 @@ import { RuleApplier } from "./rule-applier";
 import { SemVer } from "semver";
 import { Deprecier } from "./deprecier";
 import { DepreciationResult } from "./rule-application-result";
-import verifyNpmConfig from "semantic-release/lib/verify-auth";
 
 interface Plugin {
   verifyConditions(
@@ -38,27 +37,6 @@ export function createOldVersionDeprecier({
     context: Context & Config
   ): Promise<void> {
     const { logger } = context;
-
-    const errors = verifyNpmConfig(pluginConfig);
-
-    setLegacyToken(context);
-
-    try {
-      const pkg = await getPkg(pluginConfig, context);
-
-      // Verify the npm authentication only if `npmPublish` is not false and `pkg.private` is not `true`
-      if (pluginConfig.npmPublish !== false && pkg.private !== true) {
-        await verifyNpmAuth(npmrc, pkg, context);
-      }
-    } catch (error) {
-      errors.push(...error);
-    }
-
-    if (errors.length > 0) {
-      throw new AggregateError(errors);
-    }
-
-    verified = true;
 
     logger.log("using default configuration");
     rules = [keepLatest, deprecateOldPrereleases];
