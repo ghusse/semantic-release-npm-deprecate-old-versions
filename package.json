@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm test && npm run lint",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
     "lint": "eslint src --ext .js,.ts",
     "semantic-release": "semantic-release"
   },
@@ -20,7 +20,9 @@
   "author": "Guillaume Gautreau",
   "license": "ISC",
   "dependencies": {
+    "@types/execa": "^2.0.0",
     "@types/semantic-release": "^17.1.0",
+    "execa": "^4.0.3",
     "typescript": "^4.0.3"
   },
   "devDependencies": {
