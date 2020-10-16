@@ -1,0 +1,51 @@
+import { Action } from "./rule";
+import { RuleApplier } from "./rule-applier";
+
+describe("rule-applier", () => {
+  it("should return the first result that is not continue", () => {
+    expect.assertions(1);
+
+    const versions = ["1.0.0"];
+    const rules = [jest.fn(), jest.fn(), jest.fn()];
+    const ruleApplier = new RuleApplier();
+
+    rules[0].mockReturnValue(Action.continue);
+    rules[1].mockReturnValue(Action.deprecate);
+    rules[2].mockReturnValue(Action.keep);
+
+    const result = ruleApplier.applyRules(versions, rules);
+
+    expect(result).toEqual([
+      { action: Action.deprecate, version: versions[0] },
+    ]);
+  });
+
+  it("should sort versions from the newest to the oldest", () => {
+    expect.assertions(4);
+
+    const versions = ["1.0.0-alpha.1", "1.0.0-beta.0", "2.0.0", "1.0.0"];
+    const rule = jest.fn();
+    const ruleApplier = new RuleApplier();
+
+    rule.mockReturnValue(Action.continue);
+
+    const expectedSortedVersions = [
+      "2.0.0",
+      "1.0.0",
+      "1.0.0-beta.0",
+      "1.0.0-alpha.1",
+    ];
+
+    const result = ruleApplier.applyRules(versions, [rule]);
+
+    expect(rule).toHaveBeenCalledTimes(versions.length);
+    expect(rule).nthCalledWith(1, "2.0.0", expectedSortedVersions);
+    expect(rule).lastCalledWith("1.0.0-alpha.1", expectedSortedVersions);
+    expect(result).toEqual([
+      { version: "2.0.0", action: Action.continue },
+      { version: "1.0.0", action: Action.continue },
+      { version: "1.0.0-beta.0", action: Action.continue },
+      { version: "1.0.0-alpha.1", action: Action.continue },
+    ]);
+  });
+});

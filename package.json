@@ -9,7 +9,8 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "lint": "eslint src --ext .js,.ts",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "test": "jest"
   },
   "keywords": [
     "semantic-release",
@@ -22,10 +23,13 @@
   "dependencies": {
     "@types/execa": "^2.0.0",
     "@types/semantic-release": "^17.1.0",
+    "@types/semver": "^7.3.4",
     "execa": "^4.0.3",
+    "semver": "^7.3.2",
     "typescript": "^4.0.3"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.14",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/parser": "^4.4.1",
     "eslint": "^7.11.0",
@@ -34,7 +38,8 @@
     "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.5.3",
     "prettier": "^2.1.2",
-    "semantic-release": "^17.2.1"
+    "semantic-release": "^17.2.1",
+    "ts-jest": "^26.4.1"
   },
   "repository": {
     "url": "https://github.com/ghusse/semantic-release-npm-deprecate-old-versions.git",
