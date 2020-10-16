@@ -3,8 +3,11 @@
   "version": "0.0.0-development",
   "description": "A plugin for semantic-release, to automatically deprecate old versions on npm, based on a custom configuration",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test && npm run lint",
     "lint": "eslint src --ext .js,.ts",
     "semantic-release": "semantic-release"
   },

@@ -1,34 +1,51 @@
-import { Context } from "semantic-release";
+import { Config, Context } from "semantic-release";
 import { PluginConfig } from "./plugin-config";
 
 interface Plugin {
-  verify(pluginConfig: PluginConfig, context: Context): void;
+  verifyConditions(pluginConfig: PluginConfig, context: Context): void;
+  analyzeCommits(pluginConfig: PluginConfig, context: Context): void;
   prepare(pluginConfig: PluginConfig, context: Context): void;
   publish(pluginConfig: PluginConfig, context: Context): void;
-  success(pluginConfig: PluginConfig, context: Context): void;
-  fail(pluginConfig: PluginConfig, context: Context): void;
 }
 
 export function createOldVersionDeprecier(): Plugin {
-  function verify(pluginConfig: PluginConfig, context: Context): void {
-    console.log("verify", context);
+  function verifyConditions(
+    pluginConfig: PluginConfig,
+    context: Context & Config
+  ): void {
+    const { logger } = context;
+    logger.log("using default configuration");
+    console.log(context);
   }
 
-  function prepare(pluginConfig: PluginConfig, context: Context): void {}
-
-  function publish(pluginConfig: PluginConfig, context: Context): void {
-    console.log("PUBLISH", context);
+  function analyzeCommits(
+    pluginConfig: PluginConfig,
+    context: Context & Config
+  ): void {
+    const { logger } = context;
+    logger.log("analyzeCommits");
   }
 
-  function success(pluginConfig: PluginConfig, context: Context): void {}
+  function prepare(
+    pluginConfig: PluginConfig,
+    context: Context & Config
+  ): void {
+    const { logger } = context;
+    logger.log("prepare");
+  }
 
-  function fail(pluginConfig: PluginConfig, context: Context): void {}
+  function publish(
+    pluginConfig: PluginConfig,
+    context: Context & Config
+  ): void {
+    const { logger } = context;
+    logger.log("publish");
+  }
 
   return {
-    verify,
+    verifyConditions,
+    analyzeCommits,
     prepare,
     publish,
-    success,
-    fail,
   };
 }
