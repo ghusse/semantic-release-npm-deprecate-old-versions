@@ -1,1 +1,3 @@
-export interface PluginConfig {}
+export interface PluginConfig {
+  debug?: boolean;
+}
