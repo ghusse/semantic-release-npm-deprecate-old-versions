@@ -1,0 +1,37 @@
+{
+  "name": "semantic-release-npm-deprecate-old-versions",
+  "version": "0.0.0-development",
+  "description": "A plugin for semantic-release, to automatically deprecate old versions on npm, based on a custom configuration",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .js,.ts",
+    "semantic-release": "semantic-release"
+  },
+  "keywords": [
+    "semantic-release",
+    "deprecate",
+    "npm",
+    "version"
+  ],
+  "author": "Guillaume Gautreau",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^4.0.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^26.5.3",
+    "prettier": "^2.1.2",
+    "semantic-release": "^17.2.1"
+  },
+  "repository": {
+    "url": "https://github.com/ghusse/semantic-release-npm-deprecate-old-versions.git",
+    "type": "git"
+  }
+}
