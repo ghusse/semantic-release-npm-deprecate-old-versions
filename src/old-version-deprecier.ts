@@ -1,11 +1,13 @@
 import { Config, Context } from "semantic-release";
 import { PluginConfig } from "./plugin-config";
-import { VersionsLister } from "./versions-lister";
-import semverRsort from "semver/functions/rsort";
+import { PackageInfoRetriever } from "./package-info-retriever";
 import { deprecateOldPrereleases } from "./rules/deprecate-old-prereleases";
 import { Action, Rule } from "./rule";
 import { keepLatest } from "./rules/keep-latest";
 import { RuleApplier } from "./rule-applier";
+import { SemVer } from "semver";
+import { Deprecier } from "./deprecier";
+import { DepreciationResult } from "./rule-application-result";
 
 interface Plugin {
   verifyConditions(
@@ -21,11 +23,13 @@ interface Plugin {
 }
 
 export function createOldVersionDeprecier({
-  versionsLister,
+  packageInfoRetriever,
   ruleApplier,
+  deprecier,
 }: {
-  versionsLister: VersionsLister;
+  packageInfoRetriever: PackageInfoRetriever;
   ruleApplier: RuleApplier;
+  deprecier: Deprecier;
 }): Plugin {
   let rules: Rule[] = [];
   async function verifyConditions(
@@ -58,14 +62,39 @@ export function createOldVersionDeprecier({
     context: Context & Config
   ): Promise<void> {
     const { logger, cwd, env } = context;
-    const versions = await versionsLister.listVersions({ cwd, env, logger });
-    const actionsOnVersions = ruleApplier.applyRules(versions, rules);
+    const packageInfo = await packageInfoRetriever.getInfo({
+      cwd,
+      env,
+      logger,
+    });
 
-    const depreciations = actionsOnVersions
+    if (!packageInfo) {
+      return;
+    }
+
+    const parsedVersions = packageInfo.versions.map((v) => new SemVer(v));
+    const actionsOnVersions = ruleApplier.applyRules(parsedVersions, rules);
+
+    const depreciations: DepreciationResult[] = actionsOnVersions
       .filter((actionOnVersion) => actionOnVersion.action === Action.deprecate)
-      .map((actionOnVersion) => actionOnVersion.version);
+      .map((actionsOnVersion) => actionsOnVersion as DepreciationResult);
 
-    logger.log("Versions to deprecate", ...depreciations);
+    if (depreciations) {
+      logger.log(
+        "Versions to deprecate",
+        ...depreciations.map((v) => v.version.format())
+      );
+
+      for (const depreciation of depreciations) {
+        await deprecier.deprecate(packageInfo, depreciation, {
+          cwd,
+          env,
+          logger,
+        });
+      }
+    } else {
+      logger.log("No version to deprecate");
+    }
   }
 
   return {

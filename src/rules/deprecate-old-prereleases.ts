@@ -1,25 +1,33 @@
 import semverPrerelease from "semver/functions/prerelease";
-import { Action, Rule } from "../rule";
+import SemVer from "semver/classes/semver";
+import { Action, Rule, RuleResult } from "../rule";
 
 export const deprecateOldPrereleases: Rule = (
-  version: string,
-  allVersionsSortedLatestFirst: string[]
-): Action => {
+  version: SemVer,
+  allVersionsSortedLatestFirst: SemVer[]
+): RuleResult => {
   const preReleaseTags = semverPrerelease(version);
 
   if (!preReleaseTags) {
-    return Action.continue;
+    return { action: Action.continue };
   }
 
   for (const oneVersion of allVersionsSortedLatestFirst) {
-    if (oneVersion === version) {
-      return Action.continue;
+    if (oneVersion.compare(version) === 0) {
+      return { action: Action.continue };
     }
 
-    if (semverPrerelease(oneVersion)) {
-      return Action.deprecate;
+    if (
+      oneVersion.major === version.major &&
+      oneVersion.minor === version.minor &&
+      oneVersion.patch === version.patch
+    ) {
+      return {
+        action: Action.deprecate,
+        reason: `Deprecated in favor of ${oneVersion}`,
+      };
     }
   }
 
-  return Action.continue;
+  return { action: Action.continue };
 };

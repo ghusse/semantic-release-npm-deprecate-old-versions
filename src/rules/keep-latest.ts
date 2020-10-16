@@ -1,12 +1,13 @@
-import { Action, Rule } from "../rule";
+import { SemVer } from "semver";
+import { Action, Rule, RuleResult } from "../rule";
 
 export const keepLatest: Rule = (
-  version: string,
-  allVersionsSortedLatestFirst: string[]
-): Action => {
+  version: SemVer,
+  allVersionsSortedLatestFirst: SemVer[]
+): RuleResult => {
   if (version === allVersionsSortedLatestFirst[0]) {
-    return Action.keep;
+    return { action: Action.keep };
   }
 
-  return Action.continue;
+  return { action: Action.continue };
 };

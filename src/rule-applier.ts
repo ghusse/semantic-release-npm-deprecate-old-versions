@@ -1,9 +1,10 @@
 import { RuleApplicationResult } from "./rule-application-result";
 import semverRSort from "semver/functions/rsort";
 import { Action, Rule } from "./rule";
+import { SemVer } from "semver";
 
 export class RuleApplier {
-  applyRules(versions: string[], rules: Rule[]): RuleApplicationResult[] {
+  applyRules(versions: SemVer[], rules: Rule[]): RuleApplicationResult[] {
     const sortedVersions = semverRSort(versions);
 
     return sortedVersions.map((version) =>
@@ -11,10 +12,16 @@ export class RuleApplier {
         (
           accumulator: RuleApplicationResult,
           rule: Rule
-        ): RuleApplicationResult =>
-          accumulator.action === Action.continue
-            ? { action: rule(version, sortedVersions), version }
-            : accumulator,
+        ): RuleApplicationResult => {
+          if (accumulator.action === Action.continue) {
+            return {
+              version,
+              ...rule(version, sortedVersions),
+            };
+          }
+
+          return accumulator;
+        },
         { action: Action.continue, version }
       )
     );
