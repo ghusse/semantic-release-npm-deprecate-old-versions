@@ -8,6 +8,7 @@ import { RuleApplier } from "./rule-applier";
 import { SemVer } from "semver";
 import { Deprecier } from "./deprecier";
 import { DepreciationResult } from "./rule-application-result";
+import { Authentifier } from "./authentifier";
 
 interface Plugin {
   verifyConditions(
@@ -26,10 +27,12 @@ export function createOldVersionDeprecier({
   packageInfoRetriever,
   ruleApplier,
   deprecier,
+  authentifier,
 }: {
   packageInfoRetriever: PackageInfoRetriever;
   ruleApplier: RuleApplier;
   deprecier: Deprecier;
+  authentifier: Authentifier;
 }): Plugin {
   let rules: Rule[] = [];
   async function verifyConditions(
@@ -86,6 +89,7 @@ export function createOldVersionDeprecier({
         ...depreciations.map((v) => v.version.format())
       );
 
+      await authentifier.authentify(context);
       for (const depreciation of depreciations) {
         await deprecier.deprecate(packageInfo, depreciation, {
           cwd,

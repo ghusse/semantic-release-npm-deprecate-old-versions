@@ -4,8 +4,6 @@ import { Logger } from "./logger";
 import { PackageInfo } from "./package-info";
 
 export class Deprecier {
-  constructor(private readonly npmrc: string) {}
-
   public async deprecate(
     packageInfo: PackageInfo,
     { version, reason }: { version: SemVer; reason: string },
@@ -23,13 +21,7 @@ export class Deprecier {
 
     await execa(
       "npm",
-      [
-        "deprecate",
-        "--userconfig",
-        this.npmrc,
-        `${packageInfo.name}@${version.format()}`,
-        realReason,
-      ],
+      ["deprecate", `${packageInfo.name}@${version.format()}`, `${realReason}`],
       {
         cwd,
         env,
