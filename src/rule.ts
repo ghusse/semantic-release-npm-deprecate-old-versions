@@ -2,13 +2,13 @@ import { SemVer } from "semver";
 
 export enum Action {
   deprecate = "deprecate",
-  keep = "keep",
+  support = "support",
   continue = "continue",
 }
 
 export type RuleResult =
   | { action: Action.continue }
-  | { action: Action.keep }
+  | { action: Action.support }
   | {
       action: Action.deprecate;
       reason: string;

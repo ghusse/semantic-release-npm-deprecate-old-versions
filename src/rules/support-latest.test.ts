@@ -1,15 +1,15 @@
 import { SemVer } from "semver";
 import { Action } from "../rule";
-import { keepLatest } from "./keep-latest";
+import { supportLatest } from "./support-latest";
 
-describe("keep-latest", () => {
-  it("should keep the latest version", () => {
+describe("support-latest", () => {
+  it("should support the latest version", () => {
     expect.assertions(1);
 
     const sortedVersions = ["2.0.0", "1.0.0"].map((v) => new SemVer(v));
-    const result = keepLatest(sortedVersions[0], sortedVersions);
+    const result = supportLatest(sortedVersions[0], sortedVersions);
 
-    expect(result).toEqual({ action: Action.keep });
+    expect(result).toEqual({ action: Action.support });
   });
 
   it("should continue with other versions", () => {
@@ -18,7 +18,7 @@ describe("keep-latest", () => {
     const sortedVersions = ["2.0.0", "1.0.0", "1.0.0-alpha.0"].map(
       (v) => new SemVer(v)
     );
-    const result = keepLatest(sortedVersions[1], sortedVersions);
+    const result = supportLatest(sortedVersions[1], sortedVersions);
 
     expect(result).toEqual({ action: Action.continue });
   });

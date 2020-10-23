@@ -15,7 +15,7 @@ describe("rule-applier", () => {
       action: Action.deprecate,
       reason: "A good reason",
     });
-    rules[2].mockReturnValue({ action: Action.keep });
+    rules[2].mockReturnValue({ action: Action.support });
 
     const result = ruleApplier.applyRules(versions, rules);
 

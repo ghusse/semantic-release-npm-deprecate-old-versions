@@ -10,6 +10,6 @@ export interface DepreciationResult {
 export type RuleApplicationResult =
   | {
       version: SemVer;
-      action: Action.continue | Action.keep;
+      action: Action.continue | Action.support;
     }
   | DepreciationResult;

@@ -3,7 +3,7 @@ import { PluginConfig } from "./plugin-config";
 import { PackageInfoRetriever } from "./package-info-retriever";
 import { deprecateOldPrereleases } from "./rules/deprecate-old-prereleases";
 import { Action, Rule } from "./rule";
-import { keepLatest } from "./rules/keep-latest";
+import { supportLatest } from "./rules/support-latest";
 import { RuleApplier } from "./rule-applier";
 import { SemVer } from "semver";
 import { Deprecier } from "./deprecier";
@@ -42,7 +42,7 @@ export function createOldVersionDeprecier({
     const { logger } = context;
 
     logger.log("using default configuration");
-    rules = [keepLatest, deprecateOldPrereleases];
+    rules = [supportLatest, deprecateOldPrereleases];
   }
 
   async function analyzeCommits(
