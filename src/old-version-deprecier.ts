@@ -10,42 +10,41 @@ import { Deprecier } from "./deprecier";
 import { DepreciationResult } from "./rule-application-result";
 import { Authentifier } from "./authentifier";
 
-interface Plugin {
-  verifyConditions(
-    pluginConfig: PluginConfig,
-    context: Context & Config
-  ): Promise<void>;
-  analyzeCommits(
-    pluginConfig: PluginConfig,
-    context: Context & Config
-  ): Promise<void>;
-  prepare(pluginConfig: PluginConfig, context: Context & Config): Promise<void>;
-  publish(pluginConfig: PluginConfig, context: Context & Config): Promise<void>;
-}
+export class OldVersionDeprecier {
+  private rules: Rule[] = [];
+  private readonly packageInfoRetriever: PackageInfoRetriever;
+  private readonly ruleApplier: RuleApplier;
+  private readonly deprecier: Deprecier;
+  private readonly authentifier: Authentifier;
 
-export function createOldVersionDeprecier({
-  packageInfoRetriever,
-  ruleApplier,
-  deprecier,
-  authentifier,
-}: {
-  packageInfoRetriever: PackageInfoRetriever;
-  ruleApplier: RuleApplier;
-  deprecier: Deprecier;
-  authentifier: Authentifier;
-}): Plugin {
-  let rules: Rule[] = [];
-  async function verifyConditions(
+  constructor({
+    packageInfoRetriever,
+    ruleApplier,
+    deprecier,
+    authentifier,
+  }: {
+    packageInfoRetriever: PackageInfoRetriever;
+    ruleApplier: RuleApplier;
+    deprecier: Deprecier;
+    authentifier: Authentifier;
+  }) {
+    this.packageInfoRetriever = packageInfoRetriever;
+    this.ruleApplier = ruleApplier;
+    this.deprecier = deprecier;
+    this.authentifier = authentifier;
+  }
+
+  public async verifyConditions(
     pluginConfig: PluginConfig,
     context: Context & Config
   ): Promise<void> {
     const { logger } = context;
 
     logger.log("using default configuration");
-    rules = [supportLatest, deprecateOldPrereleases];
+    this.rules = [supportLatest, deprecateOldPrereleases];
   }
 
-  async function analyzeCommits(
+  public async analyzeCommits(
     pluginConfig: PluginConfig,
     context: Context & Config
   ): Promise<void> {
@@ -53,7 +52,7 @@ export function createOldVersionDeprecier({
     logger.log("analyzeCommits");
   }
 
-  async function prepare(
+  public async prepare(
     pluginConfig: PluginConfig,
     context: Context & Config
   ): Promise<void> {
@@ -61,12 +60,12 @@ export function createOldVersionDeprecier({
     logger.log("prepare");
   }
 
-  async function publish(
+  public async publish(
     pluginConfig: PluginConfig,
     context: Context & Config
   ): Promise<void> {
     const { logger, cwd, env } = context;
-    const packageInfo = await packageInfoRetriever.getInfo({
+    const packageInfo = await this.packageInfoRetriever.getInfo({
       cwd,
       env,
       logger,
@@ -77,7 +76,10 @@ export function createOldVersionDeprecier({
     }
 
     const parsedVersions = packageInfo.versions.map((v) => new SemVer(v));
-    const actionsOnVersions = ruleApplier.applyRules(parsedVersions, rules);
+    const actionsOnVersions = this.ruleApplier.applyRules(
+      parsedVersions,
+      this.rules
+    );
 
     const depreciations: DepreciationResult[] = actionsOnVersions
       .filter((actionOnVersion) => actionOnVersion.action === Action.deprecate)
@@ -89,9 +91,9 @@ export function createOldVersionDeprecier({
         ...depreciations.map((v) => v.version.format())
       );
 
-      await authentifier.authentify(context);
+      await this.authentifier.authentify(context);
       for (const depreciation of depreciations) {
-        await deprecier.deprecate(packageInfo, depreciation, {
+        await this.deprecier.deprecate(packageInfo, depreciation, {
           cwd,
           env,
           logger,
@@ -101,11 +103,4 @@ export function createOldVersionDeprecier({
       logger.log("No version to deprecate");
     }
   }
-
-  return {
-    verifyConditions,
-    analyzeCommits,
-    prepare,
-    publish,
-  };
 }
