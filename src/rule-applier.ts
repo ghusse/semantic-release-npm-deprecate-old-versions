@@ -3,7 +3,7 @@ import {
   RuleApplicationResultWithOptionalReason,
 } from "./rule-application-result";
 import semverRSort from "semver/functions/rsort";
-import { Action, RuleWithAppliedOptions } from "./rule";
+import { Action, RuleResult, RuleWithAppliedOptions } from "./rule";
 import { SemVer } from "semver";
 import VersionForMessageFinder from "./version-for-message-finder";
 
@@ -38,27 +38,34 @@ export class RuleApplier {
         )
     );
 
-    return results.map((result) => {
-      if (result.action !== Action.deprecate || result.reason) {
-        return result;
-      }
+    return results.map((result) =>
+      this.enforceAReason(results, result)
+    ) as RuleApplicationResult[];
+  }
 
-      const bestVersion = this.versionForMessageFinder.findBest(
-        results,
-        result.version
-      );
+  private enforceAReason(
+    results: RuleApplicationResultWithOptionalReason[],
+    result: RuleApplicationResultWithOptionalReason
+  ): RuleResult {
+    if (result.action !== Action.deprecate || result.reason) {
+      return result;
+    }
 
-      if (bestVersion) {
-        return {
-          ...result,
-          reason: `Deprecated in favor of ${bestVersion.format()}`,
-        };
-      }
+    const bestVersion = this.versionForMessageFinder.findBest(
+      results,
+      result.version
+    );
 
+    if (bestVersion) {
       return {
         ...result,
-        reason: `Deprecated, with no replacement version`,
+        reason: `Deprecated in favor of ${bestVersion.format()}`,
       };
-    }) as RuleApplicationResult[];
+    }
+
+    return {
+      ...result,
+      reason: `Deprecated, with no replacement version`,
+    };
   }
 }
