@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.0.0...v1.0.1) (2020-10-23)
+
+
+### Bug Fixes
+
+* :memo: minor change to update the published README on npm ([e4a9095](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/e4a9095d3054e2db1623cce2688b7924a8efb31c))
+
 # 1.0.0 (2020-10-23)
 
 
