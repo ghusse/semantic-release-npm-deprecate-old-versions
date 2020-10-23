@@ -1,9 +1,4 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/29751e470914f5b5dd20/maintainability)](https://codeclimate.com/github/ghusse/semantic-release-npm-deprecate-old-versions/maintainability)[![Test Coverage](https://api.codeclimate.com/v1/badges/29751e470914f5b5dd20/test_coverage)](https://codeclimate.com/github/ghusse/semantic-release-npm-deprecate-old-versions/test_coverage)
-Under development, not available yet
-
-# Development in progress, not functional yet
-
-**DON'T USE IT** until it's released for real.
 
 ## Installation and usage
 
