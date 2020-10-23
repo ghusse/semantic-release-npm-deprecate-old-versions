@@ -12,7 +12,7 @@ export class Deprecier {
       env,
       logger,
     }: {
-      cwd: string | undefined;
+      cwd?: string;
       env: { [name: string]: string };
       logger: Logger;
     }

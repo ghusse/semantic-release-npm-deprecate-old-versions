@@ -7,10 +7,15 @@ import { deprecateAll } from "./rules/deprecate-all";
 import { RuleApplier } from "./rule-applier";
 import { SemVer } from "semver";
 import { Deprecier } from "./deprecier";
-import { DepreciationResult } from "./rule-application-result";
+import {
+  DepreciationResult,
+  RuleApplicationResult,
+} from "./rule-application-result";
 import { Authentifier } from "./authentifier";
 import { supportPreReleaseIfNotReleased } from "./rules/support-prerelease-if-not-released";
 import ConfigurationLoader from "./configuration-loader";
+import { Logger } from "./logger";
+import { PackageInfo } from "./package-info";
 
 export class OldVersionDeprecier {
   private rules: RuleWithAppliedOptions[] = [];
@@ -56,26 +61,30 @@ export class OldVersionDeprecier {
       this.rules
     );
 
+    this.deprecate(actionsOnVersions, packageInfo, context);
+  }
+
+  private async deprecate(
+    actionsOnVersions: RuleApplicationResult[],
+    packageInfo: PackageInfo,
+    context: Context & Config
+  ) {
     const depreciations: DepreciationResult[] = actionsOnVersions
       .filter((actionOnVersion) => actionOnVersion.action === Action.deprecate)
       .map((actionsOnVersion) => actionsOnVersion as DepreciationResult);
 
     if (depreciations) {
-      logger.log(
+      context.logger.log(
         "Versions to deprecate",
         ...depreciations.map((v) => v.version.format())
       );
 
       await this.authentifier.authentify(context);
       for (const depreciation of depreciations) {
-        await this.deprecier.deprecate(packageInfo, depreciation, {
-          cwd,
-          env,
-          logger,
-        });
+        await this.deprecier.deprecate(packageInfo, depreciation, context);
       }
     } else {
-      logger.log("No version to deprecate");
+      context.logger.log("No version to deprecate");
     }
   }
 }
