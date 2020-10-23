@@ -34,29 +34,29 @@ export const supportLatest: Rule<SupportLatestOptions> = (
       continue;
     }
 
-    if (!supported.has(currentVersion.major)) {
-      supported.set(currentVersion.major, new Map<number, Set<number>>());
-    }
-    const minorSupported = supported.get(currentVersion.major);
-    if (!minorSupported?.has(currentVersion.minor)) {
-      minorSupported?.set(currentVersion.minor, new Set<number>());
-    }
-    const patchSupported = minorSupported?.get(currentVersion.minor);
-    patchSupported?.add(currentVersion.patch);
+    const minorSupported = addMajorAndReturnMinorSupported(
+      supported,
+      currentVersion
+    );
+
+    const patchSupported = addMinorAndReturnPatchSupported(
+      minorSupported,
+      currentVersion
+    );
+
+    patchSupported.add(currentVersion.patch);
 
     if (supported.size > (realOptions.numberOfMajorReleases || 1)) {
       return { action: Action.continue };
     }
 
     if (
-      minorSupported &&
       minorSupported.size > (realOptions.numberOfMinorReleases || 1) &&
       version.major === currentVersion.major
     ) {
       return { action: Action.continue };
     }
     if (
-      patchSupported &&
       patchSupported.size > (realOptions.numberOfPatchReleases || 1) &&
       version.major === currentVersion.major &&
       version.minor === currentVersion.minor
@@ -71,3 +71,23 @@ export const supportLatest: Rule<SupportLatestOptions> = (
 
   return { action: Action.support };
 };
+
+function addMajorAndReturnMinorSupported(
+  supported: Map<number, Map<number, Set<number>>>,
+  currentVersion: SemVer
+): Map<number, Set<number>> {
+  if (!supported.has(currentVersion.major)) {
+    supported.set(currentVersion.major, new Map<number, Set<number>>());
+  }
+  return supported.get(currentVersion.major) as Map<number, Set<number>>;
+}
+
+function addMinorAndReturnPatchSupported(
+  minorSupported: Map<number, Set<number>>,
+  currentVersion: SemVer
+): Set<number> {
+  if (!minorSupported?.has(currentVersion.minor)) {
+    minorSupported?.set(currentVersion.minor, new Set<number>());
+  }
+  return minorSupported?.get(currentVersion.minor) as Set<number>;
+}
