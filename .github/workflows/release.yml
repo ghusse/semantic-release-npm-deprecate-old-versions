@@ -30,7 +30,12 @@ jobs:
       - name: Build
         run: npm run build
       - name: Test
-        run: npm run test:coverage
+        uses: paambaati/codeclimate-action@v2.7.4
+        env:
+          CC_TEST_REPORTER_ID: $${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: npm run test:coverage
+          debug: true
       - name: Lint
         run: npm run lint
       - name: Release
