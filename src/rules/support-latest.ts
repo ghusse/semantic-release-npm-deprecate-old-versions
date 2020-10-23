@@ -46,20 +46,15 @@ export const supportLatest: Rule<SupportLatestOptions> = (
 
     patchSupported.add(currentVersion.patch);
 
-    if (supported.size > (realOptions.numberOfMajorReleases || 1)) {
-      return { action: Action.continue };
-    }
-
     if (
-      minorSupported.size > (realOptions.numberOfMinorReleases || 1) &&
-      version.major === currentVersion.major
-    ) {
-      return { action: Action.continue };
-    }
-    if (
-      patchSupported.size > (realOptions.numberOfPatchReleases || 1) &&
-      version.major === currentVersion.major &&
-      version.minor === currentVersion.minor
+      shouldContinue(
+        supported,
+        minorSupported,
+        patchSupported,
+        realOptions,
+        version,
+        currentVersion
+      )
     ) {
       return { action: Action.continue };
     }
@@ -71,6 +66,24 @@ export const supportLatest: Rule<SupportLatestOptions> = (
 
   return { action: Action.support };
 };
+
+function shouldContinue(
+  supported: Map<number, Map<number, Set<number>>>,
+  minorSupported: Map<number, Set<number>>,
+  patchSupported: Set<number>,
+  options: SupportLatestOptions,
+  evaluatedVersion: SemVer,
+  versionInLoop: SemVer
+): boolean {
+  return (
+    supported.size > (options.numberOfMajorReleases || 1) ||
+    (minorSupported.size > (options.numberOfMinorReleases || 1) &&
+      evaluatedVersion.major === versionInLoop.major) ||
+    (patchSupported.size > (options.numberOfPatchReleases || 1) &&
+      evaluatedVersion.major === versionInLoop.major &&
+      evaluatedVersion.minor === versionInLoop.minor)
+  );
+}
 
 function addMajorAndReturnMinorSupported(
   supported: Map<number, Map<number, Set<number>>>,
