@@ -1,9 +1,16 @@
 name: CI
-on: [push, pull_request]
+on: 
+  push:
+    branches-ignore:
+      - 'master'
+      - 'alpha'
+      - 'beta'
+  pull_request:
 jobs:
   test:
     name: test
     runs-on: ubuntu-18.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,10 +31,16 @@ jobs:
       - name: Build
         run: npm run build
       - name: Test
-        run: npm run test
+        uses: paambaati/codeclimate-action@v2.7.4
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: npm run test:coverage
+          debug: true
   lint:
     name: lint
     runs-on: ubuntu-18.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
