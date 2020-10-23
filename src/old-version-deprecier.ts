@@ -10,6 +10,7 @@ import { Deprecier } from "./deprecier";
 import { DepreciationResult } from "./rule-application-result";
 import { Authentifier } from "./authentifier";
 import { supportPreReleaseIfNotReleased } from "./rules/support-prerelease-if-not-released";
+import ConfigurationLoader from "./configuration-loader";
 
 export class OldVersionDeprecier {
   private rules: RuleWithAppliedOptions[] = [];
@@ -18,7 +19,8 @@ export class OldVersionDeprecier {
     private readonly packageInfoRetriever: PackageInfoRetriever,
     private readonly ruleApplier: RuleApplier,
     private readonly deprecier: Deprecier,
-    private readonly authentifier: Authentifier
+    private readonly authentifier: Authentifier,
+    private readonly configurationLoader: ConfigurationLoader
   ) {
     this.packageInfoRetriever = packageInfoRetriever;
     this.ruleApplier = ruleApplier;
@@ -30,30 +32,7 @@ export class OldVersionDeprecier {
     pluginConfig: PluginConfig,
     context: Context & Config
   ): Promise<void> {
-    const { logger } = context;
-
-    logger.log("using default configuration");
-    this.rules = [
-      supportLatest.bind(undefined, undefined),
-      supportPreReleaseIfNotReleased.bind(undefined, undefined),
-      deprecateAll.bind(undefined, undefined),
-    ];
-  }
-
-  public async analyzeCommits(
-    pluginConfig: PluginConfig,
-    context: Context & Config
-  ): Promise<void> {
-    const { logger } = context;
-    logger.log("analyzeCommits");
-  }
-
-  public async prepare(
-    pluginConfig: PluginConfig,
-    context: Context & Config
-  ): Promise<void> {
-    const { logger } = context;
-    logger.log("prepare");
+    this.rules = this.configurationLoader.generateRules(pluginConfig);
   }
 
   public async publish(

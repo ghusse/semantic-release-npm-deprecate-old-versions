@@ -5,6 +5,109 @@ Under development, not available yet
 
 **DON'T USE IT** until it's released for real.
 
+## Installation and usage
+
+- Install with: `npm install semantic-release-npm-deprecate-old-versions --save-dev`
+- Set the environment variable `NPM_TOKEN` (same config than `@semantic-release/npm`)
+- Update your `releaserc` configuration file
+
+### Configuration
+
+```json
+{
+  "plugins": [
+    "@semantic-release/npm", 
+    "semantic-release-npm-deprecate-old-versions"
+  ]
+}
+```
+
+Equivalent to:
+```json
+{
+  "plugins": [
+    "@semantic-release/npm", 
+    ["semantic-release-npm-deprecate-old-versions", {
+      "rules": [
+        "supportLatest",
+        "supportPreReleaseIfNotReleased",
+        "deprecateAll"
+      ]
+    }]
+  ]
+}
+```
+
+Equivalent to:
+```json
+{
+  "plugins": [
+    "@semantic-release/npm", 
+    ["semantic-release-npm-deprecate-old-versions", {
+      "rules": [
+        { 
+          "rule": "supportLatest", 
+          "options": {
+            "numberOfMajorReleases": 1,
+            "numberOfMinorReleases": 1,
+            "numberOfPatchReleases": 1
+          }
+        },
+        { 
+          "rule": "supportPreReleaseIfNotReleased", 
+          "options": {
+            "numberOfPreReleases": 1,
+          }
+        },
+        "deprecateAll"
+      ]
+    }]
+  ]
+}
+```
+
+## Extend rules
+
+If you have a javascript configuration file for releases, you can pass a function in the array:
+
+```js
+module.exports = {
+    "plugins": [
+    "@semantic-release/npm", 
+    ["semantic-release-npm-deprecate-old-versions", {
+      "rules": [
+        customSupportFunction,
+        "deprecateAll"
+      ]
+    }]
+  ]
+};
+
+/**
+ * @param {import('semver').SemVer} version
+ * @param {Array<import('semver').SemVer>} allVersionsSortedLatestFirst
+ * @returns {import('semantic-release-npm-deprecate-old-versions/rule').RuleResult}
+ */
+function customSupportFunction(version, allVersionsSortedLatestFirst){
+  if (version.major === 4){
+    // This version cannot be deprecated by other rules
+    return { action: 'support' }
+  }
+
+  if (version.major === 3){
+    // This version will be deprecated, and other rules
+    // will not be applied
+    return {
+      action: 'deprecate',
+      reason: 'Because the new version is awesome'
+    }
+  }
+
+  // Let other rules decide
+  return { action: 'continue' }
+}
+```
+
 ## Supported vs deprecated versions
 
 This plugin considers that either a version is supported, or it is deprecated.
@@ -28,7 +131,7 @@ All these options are optional. If a value is not set, the default value will ap
 {
   "numberOfMajorReleases": 1,
   "numberOfMinorReleases": 1,
-  "numberOfPatchReleases": 1,
+  "numberOfPatchReleases": 1
 }
 ```
 
