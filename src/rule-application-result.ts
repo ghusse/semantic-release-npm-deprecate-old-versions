@@ -12,16 +12,15 @@ export interface DepreciationResult
   reason: string;
 }
 
+export type RuleApplicationWithoutReason = {
+  version: SemVer;
+  action: Action.continue | Action.support;
+};
+
 export type RuleApplicationResultWithOptionalReason =
-  | {
-      version: SemVer;
-      action: Action.continue | Action.support;
-    }
+  | RuleApplicationWithoutReason
   | DepreciationResultWithOptionalReason;
 
 export type RuleApplicationResult =
-  | {
-      version: SemVer;
-      action: Action.continue | Action.support;
-    }
+  | RuleApplicationWithoutReason
   | DepreciationResult;
