@@ -1,29 +1,64 @@
-import { RuleApplicationResult } from "./rule-application-result";
+import {
+  RuleApplicationResult,
+  RuleApplicationResultWithOptionalReason,
+} from "./rule-application-result";
 import semverRSort from "semver/functions/rsort";
-import { Action, Rule } from "./rule";
+import { Action, RuleWithAppliedOptions } from "./rule";
 import { SemVer } from "semver";
+import VersionForMessageFinder from "./version-for-message-finder";
 
 export class RuleApplier {
-  applyRules(versions: SemVer[], rules: Rule[]): RuleApplicationResult[] {
+  constructor(
+    private readonly versionForMessageFinder: VersionForMessageFinder
+  ) {}
+
+  applyRules(
+    versions: SemVer[],
+    rules: RuleWithAppliedOptions[]
+  ): RuleApplicationResult[] {
     const sortedVersions = semverRSort(versions);
 
-    return sortedVersions.map((version) =>
-      rules.reduce(
-        (
-          accumulator: RuleApplicationResult,
-          rule: Rule
-        ): RuleApplicationResult => {
-          if (accumulator.action === Action.continue) {
-            return {
-              version,
-              ...rule(version, sortedVersions),
-            };
-          }
+    const results: RuleApplicationResultWithOptionalReason[] = sortedVersions.map(
+      (version) =>
+        rules.reduce(
+          (
+            accumulator: RuleApplicationResultWithOptionalReason,
+            rule: RuleWithAppliedOptions
+          ): RuleApplicationResultWithOptionalReason => {
+            if (accumulator.action === Action.continue) {
+              return {
+                version,
+                ...rule(version, sortedVersions),
+              };
+            }
 
-          return accumulator;
-        },
-        { action: Action.continue, version }
-      )
+            return accumulator;
+          },
+          { action: Action.continue, version }
+        )
     );
+
+    return results.map((result) => {
+      if (result.action !== Action.deprecate || result.reason) {
+        return result;
+      }
+
+      const bestVersion = this.versionForMessageFinder.findBest(
+        results,
+        result.version
+      );
+
+      if (bestVersion) {
+        return {
+          ...result,
+          reason: `Deprecated in favor of ${bestVersion.format()}`,
+        };
+      }
+
+      return {
+        ...result,
+        reason: `Deprecated, with no replacement version`,
+      };
+    }) as RuleApplicationResult[];
   }
 }

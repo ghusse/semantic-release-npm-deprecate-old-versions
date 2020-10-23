@@ -11,10 +11,16 @@ export type RuleResult =
   | { action: Action.support }
   | {
       action: Action.deprecate;
-      reason: string;
+      reason?: string;
     };
 
-export type Rule = (
+export type Rule<TOptions> = (
+  ruleOptions: TOptions | undefined,
+  version: SemVer,
+  allVersionsSortedLatestFirst: SemVer[]
+) => RuleResult;
+
+export type RuleWithAppliedOptions = (
   version: SemVer,
   allVersionsSortedLatestFirst: SemVer[]
 ) => RuleResult;

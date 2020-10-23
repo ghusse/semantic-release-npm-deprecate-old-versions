@@ -1,33 +1,25 @@
 import { Config, Context } from "semantic-release";
 import { PluginConfig } from "./plugin-config";
 import { PackageInfoRetriever } from "./package-info-retriever";
-import { deprecateOldPrereleases } from "./rules/deprecate-old-prereleases";
-import { Action, Rule } from "./rule";
+import { Action, Rule, RuleWithAppliedOptions } from "./rule";
 import { supportLatest } from "./rules/support-latest";
+import { deprecateAll } from "./rules/deprecate-all";
 import { RuleApplier } from "./rule-applier";
 import { SemVer } from "semver";
 import { Deprecier } from "./deprecier";
 import { DepreciationResult } from "./rule-application-result";
 import { Authentifier } from "./authentifier";
+import { supportPreReleaseIfNotReleased } from "./rules/support-prerelease-if-not-released";
 
 export class OldVersionDeprecier {
-  private rules: Rule[] = [];
-  private readonly packageInfoRetriever: PackageInfoRetriever;
-  private readonly ruleApplier: RuleApplier;
-  private readonly deprecier: Deprecier;
-  private readonly authentifier: Authentifier;
+  private rules: RuleWithAppliedOptions[] = [];
 
-  constructor({
-    packageInfoRetriever,
-    ruleApplier,
-    deprecier,
-    authentifier,
-  }: {
-    packageInfoRetriever: PackageInfoRetriever;
-    ruleApplier: RuleApplier;
-    deprecier: Deprecier;
-    authentifier: Authentifier;
-  }) {
+  constructor(
+    private readonly packageInfoRetriever: PackageInfoRetriever,
+    private readonly ruleApplier: RuleApplier,
+    private readonly deprecier: Deprecier,
+    private readonly authentifier: Authentifier
+  ) {
     this.packageInfoRetriever = packageInfoRetriever;
     this.ruleApplier = ruleApplier;
     this.deprecier = deprecier;
@@ -41,7 +33,11 @@ export class OldVersionDeprecier {
     const { logger } = context;
 
     logger.log("using default configuration");
-    this.rules = [supportLatest, deprecateOldPrereleases];
+    this.rules = [
+      supportLatest.bind(undefined, undefined),
+      supportPreReleaseIfNotReleased.bind(undefined, undefined),
+      deprecateAll.bind(undefined, undefined),
+    ];
   }
 
   public async analyzeCommits(
