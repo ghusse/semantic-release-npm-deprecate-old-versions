@@ -43,7 +43,6 @@ Equivalent to:
         { 
           "rule": "supportLatest", 
           "options": {
-            // Each value supports a number or the string "all"
             "numberOfMajorReleases": 1,
             "numberOfMinorReleases": 1,
             "numberOfPatchReleases": 1
