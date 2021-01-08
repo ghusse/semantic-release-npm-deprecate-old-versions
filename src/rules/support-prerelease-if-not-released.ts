@@ -4,9 +4,8 @@ import { Action, Rule, RuleResult } from "../rule";
 const DEFAULT_OPTIONS: SupportPreReleaseOptions = {
   numberOfPreReleases: 1,
 };
-
 export interface SupportPreReleaseOptions {
-  numberOfPreReleases?: number;
+  numberOfPreReleases?: number | "all";
 }
 
 export const supportPreReleaseIfNotReleased: Rule<SupportPreReleaseOptions> = (
@@ -38,7 +37,10 @@ export const supportPreReleaseIfNotReleased: Rule<SupportPreReleaseOptions> = (
       }
     }
 
-    if (supportedPreReleases > (realOptions.numberOfPreReleases || 1)) {
+    if (
+      realOptions.numberOfPreReleases !== "all" &&
+      supportedPreReleases > (realOptions.numberOfPreReleases || 1)
+    ) {
       return { action: Action.continue };
     }
 

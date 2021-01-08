@@ -121,7 +121,18 @@ This rule allows to declare a certain number of releases as supported. This rule
 
 #### Options
 
+Configuration format
+
+```ts
+{
+  numberOfMajorReleases?: number | "all",
+  numberOfMinorReleases?: number | "all",
+  numberOfPatchReleases?: number | "all"
+}
+```
+
 All these options are optional. If a value is not set, the default value will apply
+
 ```json
 {
   "numberOfMajorReleases": 1,
@@ -132,11 +143,25 @@ All these options are optional. If a value is not set, the default value will ap
 
 #### Examples
 
+##### Use a number to configure the number of supported values
+
 options: `numberOfMajorReleases=2`
 
 | `2.0.1`       |`2.0.0`     | `1.0.2`    | `1.0.1`    | `1.0.0`    |
 | :------------ | :--------: | :--------: | :--------: | ---------: |
 | **support**   | continue   | **support**| continue   | continue   |
+
+`continue` means that the status of a version is not fixed by this rule
+
+##### Specify that all versions will be supported
+
+options: 
+- `numberOfMajorReleases=1`
+- `numberOfMinorReleases="all"`
+
+| `2.2.0`       |`2.1.0`      | `2.0.1`    | `2.0.0`    | `1.0.0`    |
+| :------------ | :--------:  | :--------: | :--------: | ---------: |
+| **support**   | **support** | **support**| continue   | continue   |
 
 `continue` means that the status of a version is not fixed by this rule
 
@@ -146,6 +171,14 @@ This rule allows to declare a certain number of pre-releases as supported. This 
 
 #### Options
 
+Configuration format
+```ts
+{
+  numberOfPreReleases: number | "all",
+}
+```
+
+Default configuration option
 ```json
 {
   "numberOfPreReleases": 1,

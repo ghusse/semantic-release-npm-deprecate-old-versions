@@ -7,10 +7,11 @@ const DEFAULT_OPTIONS: SupportLatestOptions = {
   numberOfPatchReleases: 1,
 };
 
+export type SupportLatestVersionOption = number | "all";
 export interface SupportLatestOptions {
-  numberOfMajorReleases?: number;
-  numberOfMinorReleases?: number;
-  numberOfPatchReleases?: number;
+  numberOfMajorReleases?: SupportLatestVersionOption;
+  numberOfMinorReleases?: SupportLatestVersionOption;
+  numberOfPatchReleases?: SupportLatestVersionOption;
 }
 
 export const supportLatest: Rule<SupportLatestOptions> = (
@@ -67,6 +68,16 @@ export const supportLatest: Rule<SupportLatestOptions> = (
   return { action: Action.support };
 };
 
+function shouldContinueWith(
+  numberOfVersionsGreaterOrEqual: number,
+  releaseOption?: SupportLatestVersionOption
+): boolean {
+  return (
+    releaseOption !== "all" &&
+    numberOfVersionsGreaterOrEqual > (releaseOption || 1)
+  );
+}
+
 function shouldContinue(
   supported: Map<number, Map<number, Set<number>>>,
   minorSupported: Map<number, Set<number>>,
@@ -76,10 +87,10 @@ function shouldContinue(
   versionInLoop: SemVer
 ): boolean {
   return (
-    supported.size > (options.numberOfMajorReleases || 1) ||
-    (minorSupported.size > (options.numberOfMinorReleases || 1) &&
+    shouldContinueWith(supported.size, options.numberOfMajorReleases) ||
+    (shouldContinueWith(minorSupported.size, options.numberOfMinorReleases) &&
       evaluatedVersion.major === versionInLoop.major) ||
-    (patchSupported.size > (options.numberOfPatchReleases || 1) &&
+    (shouldContinueWith(patchSupported.size, options.numberOfPatchReleases) &&
       evaluatedVersion.major === versionInLoop.major &&
       evaluatedVersion.minor === versionInLoop.minor)
   );
