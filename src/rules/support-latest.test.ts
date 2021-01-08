@@ -260,4 +260,185 @@ describe("support-latest", () => {
       expect(result).toEqual({ action: Action.support });
     });
   });
+
+  describe("with numberOfMajorReleases=all", () => {
+    function generateOptions(): SupportLatestOptions {
+      return {
+        numberOfMajorReleases: "all",
+      };
+    }
+    it("should support the latest version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should support with the latest-1 version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("1.2.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should continue with the previous minor", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.1.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+
+    it("should continue on the latest major, latest minor, patch-1 version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.1"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+
+    it("should continue on the latest prerelease", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("3.0.0-alpha.0"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+  });
+
+  describe("with numberOfMinorReleases=all", () => {
+    function generateOptions(): SupportLatestOptions {
+      return {
+        numberOfMinorReleases: "all",
+      };
+    }
+    it("should support the latest version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should continue with the latest-1 version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("1.2.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+
+    it("should support the previous minor", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.1.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should support the latest minor - 2", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.0.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should continue on the latest major, patch-1 version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.1"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+
+    it("should continue on the latest prerelease", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("3.0.0-alpha.0"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+  });
+
+  describe("with numberOfPatchReleases=all", () => {
+    function generateOptions(): SupportLatestOptions {
+      return {
+        numberOfPatchReleases: "all",
+      };
+    }
+    it("should support the latest version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should continue with the latest-1 version", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("1.2.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+
+    it("should continue with the previous minor", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.1.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+
+    it("should support the previous patch", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.1"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should support the latest patch - 2", () => {
+      expect.assertions(1);
+      const result = supportLatest(
+        generateOptions(),
+        new SemVer("2.2.0"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+  });
 });

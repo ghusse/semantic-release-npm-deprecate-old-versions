@@ -105,4 +105,51 @@ describe("support-prerelease-if-not-released", () => {
       expect(result).toEqual({ action: Action.continue });
     });
   });
+
+  describe("with numberOfMajorReleases=all", () => {
+    function generateOptions(): SupportPreReleaseOptions {
+      return {
+        numberOfPreReleases: "all",
+      };
+    }
+    it("should support the latest alpha version", () => {
+      expect.assertions(1);
+      const result = supportPreReleaseIfNotReleased(
+        generateOptions(),
+        new SemVer("3.0.0-alpha.2"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should support the latest-1 alpha version", () => {
+      expect.assertions(1);
+      const result = supportPreReleaseIfNotReleased(
+        generateOptions(),
+        new SemVer("3.0.0-alpha.1"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should support on the latest-2 alpha", () => {
+      expect.assertions(1);
+      const result = supportPreReleaseIfNotReleased(
+        generateOptions(),
+        new SemVer("3.0.0-alpha.0"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.support });
+    });
+
+    it("should continue on the released alpha", () => {
+      expect.assertions(1);
+      const result = supportPreReleaseIfNotReleased(
+        generateOptions(),
+        new SemVer("2.0.0-alpha.0"),
+        generateVersions()
+      );
+      expect(result).toEqual({ action: Action.continue });
+    });
+  });
 });
