@@ -69,12 +69,12 @@ export const supportLatest: Rule<SupportLatestOptions> = (
 };
 
 function shouldContinueWith(
-  numberOfPreviousReleasesIncludingThisOne: number,
+  numberOfVersionsGreaterOrEqual: number,
   releaseOption?: SupportLatestVersionOption
 ): boolean {
   return (
     releaseOption !== "all" &&
-    numberOfPreviousReleasesIncludingThisOne > (releaseOption || 1)
+    numberOfVersionsGreaterOrEqual > (releaseOption || 1)
   );
 }
 
