@@ -48,15 +48,21 @@ export default class ConfigurationLoader {
 
   private generateRule(
     rule: SupportedDefaultRule,
-    options: any
+    options: unknown
   ): RuleWithAppliedOptions {
     switch (rule) {
       case SupportedDefaultRule.deprecateAll:
-        return this.deprecateAll.bind(undefined, options);
+        return this.deprecateAll.bind(undefined, undefined);
       case SupportedDefaultRule.supportLatest:
-        return this.supportLatest.bind(undefined, options);
+        return this.supportLatest.bind(
+          undefined,
+          options as SupportLatestOptions
+        );
       case SupportedDefaultRule.supportPreReleaseIfNotReleased:
-        return this.supportPreReleaseIfNotReleased.bind(undefined, options);
+        return this.supportPreReleaseIfNotReleased.bind(
+          undefined,
+          options as SupportPreReleaseOptions
+        );
 
       default:
         throw new Error(`Unsupported rule ${rule}`);

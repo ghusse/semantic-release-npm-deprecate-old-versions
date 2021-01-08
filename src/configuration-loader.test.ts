@@ -101,6 +101,7 @@ describe("ConfigurationLoader", () => {
 
       expect(() => {
         loader.generateRules({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           rules: ["garbage" as any],
         });
       }).toThrowError("Unsupported rule garbage");
@@ -155,6 +156,7 @@ describe("ConfigurationLoader", () => {
 
       expect(() => {
         loader.generateRules({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           rules: [{ rule: "garbage" as any }],
         });
       }).toThrowError("Unsupported rule garbage");
