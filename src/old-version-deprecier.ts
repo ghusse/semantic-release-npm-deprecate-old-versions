@@ -1,9 +1,7 @@
 import { Config, Context } from "semantic-release";
 import { PluginConfig } from "./plugin-config";
 import { PackageInfoRetriever } from "./package-info-retriever";
-import { Action, Rule, RuleWithAppliedOptions } from "./rule";
-import { supportLatest } from "./rules/support-latest";
-import { deprecateAll } from "./rules/deprecate-all";
+import { Action, RuleWithAppliedOptions } from "./rule";
 import { RuleApplier } from "./rule-applier";
 import { SemVer } from "semver";
 import { Deprecier } from "./deprecier";
@@ -12,9 +10,7 @@ import {
   RuleApplicationResult,
 } from "./rule-application-result";
 import { Authentifier } from "./authentifier";
-import { supportPreReleaseIfNotReleased } from "./rules/support-prerelease-if-not-released";
 import ConfigurationLoader from "./configuration-loader";
-import { Logger } from "./logger";
 import { PackageInfo } from "./package-info";
 
 export class OldVersionDeprecier {
@@ -33,10 +29,7 @@ export class OldVersionDeprecier {
     this.authentifier = authentifier;
   }
 
-  public async verifyConditions(
-    pluginConfig: PluginConfig,
-    context: Context & Config
-  ): Promise<void> {
+  public async verifyConditions(pluginConfig: PluginConfig): Promise<void> {
     this.rules = this.configurationLoader.generateRules(pluginConfig);
   }
 
