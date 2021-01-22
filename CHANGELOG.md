@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.0...v1.1.1) (2021-01-22)
+
+
+### Bug Fixes
+
+* correctly detect configuration for the rume supportPreReleaseIfNotReleased ([4593bcf](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/4593bcf3351b5c690a8e8b1e73a08d36f6adad9a))
+
 # [1.1.0](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.0.1...v1.1.0) (2021-01-08)
 
 
