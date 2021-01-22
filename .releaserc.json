@@ -17,6 +17,26 @@
       "assets": ["CHANGELOG.md", "package.json"],
       "message": "chore(release): :bookmark: ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
     }],
-    "./dist/index.js"
+    [
+      "./dist/index.js", {
+        "rules": [
+          { 
+            "rule": "supportLatest", 
+            "options": {
+              "numberOfMajorReleases": 1,
+              "numberOfMinorReleases": 1,
+              "numberOfPatchReleases": 1
+            }
+          },
+          { 
+            "rule": "supportPreReleaseIfNotReleased", 
+            "options": {
+              "numberOfPreReleases": 1
+            }
+          },
+          "deprecateAll"
+        ]
+      }
+    ]
   ]
 }
