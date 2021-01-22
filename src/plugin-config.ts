@@ -3,7 +3,7 @@ import { RuleWithAppliedOptions } from "./rule";
 export enum SupportedDefaultRule {
   deprecateAll = "deprecateAll",
   supportLatest = "supportLatest",
-  supportPreReleaseIfNotReleased = "support-prerelease-if-not-released",
+  supportPreReleaseIfNotReleased = "supportPrereleaseIfNotReleased",
 }
 
 export interface RuleConfigWithOptions {
