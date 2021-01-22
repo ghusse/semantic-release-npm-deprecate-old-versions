@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.1...v1.1.2) (2021-01-22)
+
+
+### Bug Fixes
+
+* configuration of the supportPreReleaseIfNotReleased rule ([2d0939c](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/2d0939c602675ec5521855489eba05b33d4725b7))
+* correctly detect configurtion for the rule supportPreReleaseIfNotReleased ([1432c50](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/1432c50bc1e08c89848a40d6c4be460b4ffb1d5b))
+
 ## [1.1.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.0...v1.1.1) (2021-01-22)
 
 
