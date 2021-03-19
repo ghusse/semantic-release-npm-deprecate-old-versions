@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.4...v1.1.5) (2021-03-19)
+
+
+### Bug Fixes
+
+* correctly wait for the depreciation to finish before setting the task as completed ([#6](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/6)) ([949f7a4](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/949f7a49c16b231b1cf6b1c681cae6dfbd27b3f4))
+
 ## [1.1.4](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.3...v1.1.4) (2021-03-19)
 
 
