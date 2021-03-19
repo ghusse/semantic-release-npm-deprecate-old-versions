@@ -24,7 +24,6 @@ export class Deprecier {
         "npm",
         [
           "deprecate",
-          "-f",
           `${packageInfo.name}@${version.format()}`,
           `${realReason}`,
         ],
