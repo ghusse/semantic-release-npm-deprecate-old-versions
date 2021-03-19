@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.3...v1.1.4) (2021-03-19)
+
+
+### Bug Fixes
+
+* "invalid version range" error when deprecating versions ([#5](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/5)) ([2b4712e](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/2b4712e1cf267c014f9a2f16360294360a342d44))
+
 ## [1.1.3](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.2...v1.1.3) (2021-03-19)
 
 
