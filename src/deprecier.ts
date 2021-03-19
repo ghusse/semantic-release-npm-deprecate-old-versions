@@ -19,14 +19,34 @@ export class Deprecier {
   ): Promise<void> {
     const realReason = reason || "Automatically deprecated";
 
-    await execa(
-      "npm",
-      ["deprecate", `${packageInfo.name}@${version.format()}`, `${realReason}`],
-      {
-        cwd,
-        env,
+    try {
+      await execa(
+        "npm",
+        [
+          "deprecate",
+          "-f",
+          `'${packageInfo.name}@${version.format()}'`,
+          `${realReason}`,
+        ],
+        {
+          cwd,
+          env,
+        }
+      );
+    } catch (error) {
+      if (error.stderr?.includes("npm ERR! code E422\n")) {
+        logger.log(
+          `Version ${version.format()} could not be deprecated, is it already deprecated?`
+        );
       }
-    );
+      if (error.stderr?.includes("npm ERR! code E405\n")) {
+        logger.log(
+          `Version ${version.format()} could not be deprecated, is it already deprecated?`
+        );
+      } else {
+        throw error;
+      }
+    }
 
     logger.log("Deprecated version", version.format());
   }
