@@ -54,7 +54,7 @@ export class OldVersionDeprecier {
       this.rules
     );
 
-    this.deprecate(actionsOnVersions, packageInfo, context);
+    await this.deprecate(actionsOnVersions, packageInfo, context);
   }
 
   private async deprecate(
