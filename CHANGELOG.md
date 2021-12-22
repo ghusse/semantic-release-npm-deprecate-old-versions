@@ -1,3 +1,11 @@
+## [1.1.6](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.5...v1.1.6) (2021-12-22)
+
+
+### Bug Fixes
+
+* ignore 422 errors and log unexpected errors when deprecating packages ([#9](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/9)) ([e34f67b](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/e34f67b5bcf7ed0d60df3657dc876cd25ad27a8f))
+* remove force on the call to deprecate ([d575f49](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/d575f49f56871773c936ca0f037f6451cb2f99c6))
+
 ## [1.1.5](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.4...v1.1.5) (2021-03-19)
 
 
