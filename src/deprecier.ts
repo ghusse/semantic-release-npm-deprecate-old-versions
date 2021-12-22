@@ -33,16 +33,17 @@ export class Deprecier {
         }
       );
     } catch (error) {
-      if (error.stderr?.includes("npm ERR! code E422\n")) {
+      if (error.stderr?.includes("npm ERR! code E422")) {
         logger.log(
           `Version ${version.format()} could not be deprecated, is it already deprecated?`
         );
       }
-      if (error.stderr?.includes("npm ERR! code E405\n")) {
+      if (error.stderr?.includes("npm ERR! code E405")) {
         logger.log(
           `Version ${version.format()} could not be deprecated, is it already deprecated?`
         );
       } else {
+        logger.error("Unexpected error", error);
         throw error;
       }
     }
