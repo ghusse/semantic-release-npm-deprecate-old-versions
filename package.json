@@ -23,7 +23,7 @@
   "license": "ISC",
   "dependencies": {
     "execa": "^4.1.0",
-    "semver": "^7.3.2"
+    "semver": "^7.3.5"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.1",
