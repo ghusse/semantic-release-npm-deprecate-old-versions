@@ -128,7 +128,7 @@ describe("PackageInfoRetriever", () => {
           })
         ).thenResolve({
           stdout: JSON.stringify(basicInfo),
-        });
+        } as any);
 
         const result = {
           stdout: JSON.stringify({
@@ -140,7 +140,7 @@ describe("PackageInfoRetriever", () => {
             env: context.env,
             cwd: context.cwd,
           })
-        ).thenResolve(result);
+        ).thenResolve(result as any);
 
         when(
           logger.log("Registry used:", "https://registry.npmjs.org/")
@@ -205,7 +205,7 @@ describe("PackageInfoRetriever", () => {
           })
         ).thenResolve({
           stdout: JSON.stringify(basicInfo),
-        });
+        } as any);
 
         const result = {
           stdout: JSON.stringify({
@@ -217,7 +217,7 @@ describe("PackageInfoRetriever", () => {
             env: context.env,
             cwd: context.cwd,
           })
-        ).thenResolve(result);
+        ).thenResolve(result as any);
 
         when(
           logger.log("Registry used:", "https://registry.npmjs.org/")
