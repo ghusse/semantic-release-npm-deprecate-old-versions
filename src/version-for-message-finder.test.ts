@@ -1,5 +1,5 @@
 import { SemVer } from "semver";
-import { Action } from "./rule";
+import { Action } from "./interfaces/rule.interface";
 import { RuleApplicationResultWithOptionalReason } from "./rule-application-result";
 import VersionForMessageFinder from "./version-for-message-finder";
 

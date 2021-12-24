@@ -1,6 +1,6 @@
 import { SemVer } from "semver";
 import ConfigurationLoader from "./configuration-loader";
-import { SupportedDefaultRule } from "./plugin-config";
+import { SupportedDefaultRule } from "./interfaces/plugin-config.interface";
 
 describe("ConfigurationLoader", () => {
   function setup() {
