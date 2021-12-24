@@ -1,3 +1,3 @@
-import { execa } from "execa";
+import execa from "execa";
 
 export type Execa = typeof execa;
