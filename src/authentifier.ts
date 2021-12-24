@@ -1,8 +1,8 @@
-import execa from "execa";
-import { Logger } from "./logger";
+import { execa } from "execa";
+import { Logger } from "./interfaces/logger.interface";
 
 export class Authentifier {
-  public async authentify({
+  public async authenticate({
     cwd,
     env,
     logger,

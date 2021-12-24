@@ -18,5 +18,11 @@
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
+    "jest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": ["expect", "verify", "verifyAll"]
+      }
+    ]
   }
 }
