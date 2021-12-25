@@ -248,6 +248,10 @@ describe("OldVersionDeprecier", () => {
         },
       };
 
+      deprecierState.npmConfig = {
+        registry: "registry",
+      };
+
       const rule = mock<RuleWithAppliedOptions>();
 
       deprecierState.rules = [instance(rule)];
@@ -290,5 +294,30 @@ describe("OldVersionDeprecier", () => {
 
       verifyAll();
     });
+  });
+
+  it("should throw an error if the npm config could not be retrieved", async () => {
+    const { oldVersionDeprecier, deprecierState } = setup();
+
+    const logger = mock<Logger>();
+    const context: Context & Config = {
+      logger: instance(logger),
+      cwd: "here",
+      env: {},
+    };
+
+    deprecierState.packageInfo = {
+      name: "foo",
+      versions: {
+        "1.0.0": {
+          name: "foo",
+          version: "1.0.0",
+        },
+      },
+    };
+
+    await expect(oldVersionDeprecier.publish({}, context)).rejects.toThrow(
+      "Unable to deprecate version as the configuration of NPM could not be retrieved"
+    );
   });
 });

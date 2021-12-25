@@ -1,3 +1,4 @@
+import { NpmConfig } from "./interfaces/npm.interface";
 import { PackageInfo } from "./interfaces/package-info.interface";
 import { RuleWithAppliedOptions } from "./interfaces/rule.interface";
 

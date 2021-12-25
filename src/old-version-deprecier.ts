@@ -55,6 +55,12 @@ export class OldVersionDeprecier {
       return;
     }
 
+    if (!this.deprecierState.npmConfig) {
+      throw new Error(
+        "Unable to deprecate version as the configuration of NPM could not be retrieved"
+      );
+    }
+
     const activeVersions = this.listActiveVersions(
       this.deprecierState.packageInfo
     );
@@ -90,7 +96,7 @@ export class OldVersionDeprecier {
       );
 
       await this.authentifier.authenticate(
-        this.deprecierState.npmConfig,
+        this.deprecierState.npmConfig!,
         context
       );
       for (const depreciation of depreciations) {
