@@ -17,6 +17,7 @@ import {
   DepreciationResult,
   RuleApplicationResult,
 } from "./rule-application-result";
+import { Npm } from "./npm";
 
 describe("OldVersionDeprecier", () => {
   function setup() {
@@ -27,6 +28,7 @@ describe("OldVersionDeprecier", () => {
     const configurationLoader = mock<ConfigurationLoader>();
     const listActiveVersions = mock<ListActiveVersions>();
     const deprecierState = new DeprecierState();
+    const npm = mock<Npm>();
 
     const oldVersionDeprecier = new OldVersionDeprecier(
       instance(packageInfoRetriever),
@@ -35,6 +37,7 @@ describe("OldVersionDeprecier", () => {
       instance(authentifier),
       instance(configurationLoader),
       instance(listActiveVersions),
+      instance(npm),
       deprecierState
     );
 
@@ -46,6 +49,7 @@ describe("OldVersionDeprecier", () => {
       authentifier,
       configurationLoader,
       listActiveVersions,
+      npm,
       deprecierState,
     };
   }
@@ -80,6 +84,7 @@ describe("OldVersionDeprecier", () => {
         oldVersionDeprecier,
         packageInfoRetriever,
         deprecierState,
+        npm,
       } = setup();
 
       const config: PluginConfig = { debug: true };
@@ -89,6 +94,12 @@ describe("OldVersionDeprecier", () => {
         cwd: "here",
         env: {},
       };
+
+      const npmConfig = {
+        registry: "registry",
+      };
+
+      when(npm.getConfig(context)).thenResolve(npmConfig);
 
       const packageInfo: PackageInfo = {
         name: "foo",
@@ -100,18 +111,15 @@ describe("OldVersionDeprecier", () => {
         },
       };
 
-      when(
-        packageInfoRetriever.getInfo({
-          logger: context.logger,
-          cwd: context.cwd,
-          env: context.env,
-        })
-      ).thenResolve(packageInfo);
+      when(packageInfoRetriever.getInfo(npmConfig, context)).thenResolve(
+        packageInfo
+      );
 
       await oldVersionDeprecier.prepare(config, context);
 
       verify(packageInfoRetriever);
       expect(deprecierState.packageInfo).toBe(packageInfo);
+      expect(deprecierState.npmConfig).toBe(npmConfig);
     });
   });
 
@@ -163,6 +171,10 @@ describe("OldVersionDeprecier", () => {
 
       deprecierState.rules = [instance(rule)];
 
+      deprecierState.npmConfig = {
+        registry: "registry",
+      };
+
       when(listActiveVersions(deprecierState.packageInfo)).thenReturn([
         "1.0.0",
         "2.0.0",
@@ -198,7 +210,9 @@ describe("OldVersionDeprecier", () => {
         env: {},
       };
 
-      when(authentifier.authenticate(context)).thenResolve();
+      when(
+        authentifier.authenticate(deprecierState.npmConfig, context)
+      ).thenResolve();
       when(
         deprecier.deprecate(
           deprecierState.packageInfo,

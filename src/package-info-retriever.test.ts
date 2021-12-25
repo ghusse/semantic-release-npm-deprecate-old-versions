@@ -1,263 +1,113 @@
-import { Response } from "node-fetch";
+import { Config, Context } from "semantic-release";
 import { instance, mock, verifyAll, when } from "strong-mock";
-import { Execa } from "./interfaces/execa.interface";
-import { Fetch } from "./interfaces/fetch.interface";
 import { Logger } from "./interfaces/logger.interface";
+import { NpmConfig } from "./interfaces/npm.interface";
+import { PackageInfo } from "./interfaces/package-info.interface";
+import { Npm } from "./npm";
+import { NpmApi } from "./npm-api";
+import { NpmError } from "./npm-error";
 import { PackageInfoRetriever } from "./package-info-retriever";
 
 describe("PackageInfoRetriever", () => {
   function setup() {
-    const fetch = mock<Fetch>();
-    const execa = mock<Execa>();
+    const npmApi = mock<NpmApi>();
+    const npm = mock<Npm>();
 
     const packageInfoRetriever = new PackageInfoRetriever(
-      instance(fetch),
-      instance(execa)
+      instance(npmApi),
+      instance(npm)
     );
 
-    return { packageInfoRetriever, fetch, execa };
+    return { packageInfoRetriever, npmApi, npm };
   }
 
   describe("getInfo", () => {
     it("should return undefined if no basic info can be found", async () => {
-      const { execa, packageInfoRetriever } = setup();
-
+      const { packageInfoRetriever, npmApi, npm } = setup();
+      const npmConfig = mock<NpmConfig>();
+      const context = mock<Context & Config>();
       const logger = mock<Logger>();
-      const context = {
-        cwd: "here",
-        env: {},
-        logger: instance(logger),
-      };
 
-      const error = new Error("Not found");
-      (error as any).stdout = JSON.stringify({
-        error: {
-          code: "E404",
-        },
-      });
+      when(context.logger).thenReturn(instance(logger));
 
-      when(
-        execa("npm", ["view", "--json"], {
-          cwd: context.cwd,
-          env: context.env,
-        })
-      ).thenReject(error);
+      const error = new NpmError("E404", "Not found", new Error());
+      when(npm.getBasicInfo(instance(context))).thenReject(error);
 
       when(logger.log("This package has not been published yet")).thenReturn();
 
-      const result = await packageInfoRetriever.getInfo(context);
+      const info = await packageInfoRetriever.getInfo(
+        npmConfig,
+        instance(context)
+      );
+
+      expect(info).toBeUndefined();
 
       verifyAll();
-      expect(result).toBe(undefined);
     });
 
-    it("should rethrow errors that could not be parsed", async () => {
-      const { execa, packageInfoRetriever } = setup();
+    it("should rethrow errors that don't have a code", async () => {
+      const { packageInfoRetriever, npm } = setup();
+      const npmConfig = mock<NpmConfig>();
+      const context = mock<Context & Config>();
 
-      const logger = mock<Logger>();
-      const context = {
-        cwd: "here",
-        env: {},
-        logger: instance(logger),
-      };
+      const error = new Error("Something went wrong");
+      when(npm.getBasicInfo(instance(context))).thenReject(error);
 
-      const error = new Error("Not found");
-      (error as any).stdout = "not json";
-
-      when(
-        execa("npm", ["view", "--json"], {
-          cwd: context.cwd,
-          env: context.env,
-        })
-      ).thenReject(error);
-
-      await expect(packageInfoRetriever.getInfo(context)).rejects.toBe(error);
+      await expect(
+        packageInfoRetriever.getInfo(npmConfig, instance(context))
+      ).rejects.toThrow(error);
 
       verifyAll();
     });
 
     it("should rethrow errors that are not 404s", async () => {
-      const { execa, packageInfoRetriever } = setup();
+      const { packageInfoRetriever, npm } = setup();
+      const npmConfig = mock<NpmConfig>();
+      const context = mock<Context & Config>();
 
-      const logger = mock<Logger>();
-      const context = {
-        cwd: "here",
-        env: {},
-        logger: instance(logger),
-      };
+      const error = new NpmError("E500", "Something went wrong", new Error());
+      when(npm.getBasicInfo(instance(context))).thenReject(error);
 
-      const error = new Error("Not found");
-      (error as any).stdout = JSON.stringify({
-        error: {
-          code: "E500",
-        },
-      });
-
-      when(
-        execa("npm", ["view", "--json"], {
-          cwd: context.cwd,
-          env: context.env,
-        })
-      ).thenReject(error);
-
-      await expect(packageInfoRetriever.getInfo(context)).rejects.toBe(error);
+      await expect(
+        packageInfoRetriever.getInfo(npmConfig, instance(context))
+      ).rejects.toThrow(error);
 
       verifyAll();
     });
 
     describe("when some basic info could have been retrieved", () => {
-      it("should return undefined if npm config could not be found", async () => {
-        const { execa, packageInfoRetriever, fetch } = setup();
-
-        const logger = mock<Logger>();
-        const context = {
-          cwd: "here",
-          env: {},
-          logger: instance(logger),
-        };
-
-        const basicInfo = {
-          name: "some-package",
-          version: "1.0.0",
-        };
-
-        when(
-          execa("npm", ["view", "--json"], {
-            cwd: context.cwd,
-            env: context.env,
-          })
-        ).thenResolve({
-          stdout: JSON.stringify(basicInfo),
-        } as any);
-
-        const result = {
-          stdout: JSON.stringify({
-            registry: "https://registry.npmjs.org/",
-          }),
-        };
-        when(
-          execa("npm", ["config", "list", "--json"], {
-            env: context.env,
-            cwd: context.cwd,
-          })
-        ).thenResolve(result as any);
-
-        when(
-          logger.log("Registry used:", "https://registry.npmjs.org/")
-        ).thenReturn();
-
-        type Json = () => Promise<any>;
-        const json = mock<Json>();
-
-        const response: any = {
-          status: 200,
-          json: instance(json),
-        };
-
-        when(
-          fetch(
-            `https://registry.npmjs.org/${encodeURIComponent("some-package")}`
-          )
-        ).thenResolve(response);
-
-        const detailedInfo = {
-          name: "some-package",
-          version: "1.0.0",
-          versions: {
-            "1.0.0": {
-              name: "some-package",
-              version: "1.0.0",
-            },
-            "2.0.0": {
-              name: "some-package",
-              version: "2.0.0",
-            },
-          },
-        };
-
-        when(json()).thenResolve(detailedInfo);
-
-        const packageInfo = await packageInfoRetriever.getInfo(context);
-
-        verifyAll();
-        expect(packageInfo).toBe(detailedInfo);
-      });
-
       it("should return the detailed info from the registry", async () => {
-        const { execa, packageInfoRetriever, fetch } = setup();
-
-        const logger = mock<Logger>();
-        const context = {
-          cwd: "here",
-          env: {},
-          logger: instance(logger),
-        };
+        const { packageInfoRetriever, npmApi, npm } = setup();
+        const npmConfig = mock<NpmConfig>();
+        const context = mock<Context & Config>();
 
         const basicInfo = {
-          name: "some-package",
+          name: "my-package",
           version: "1.0.0",
         };
+        when(npm.getBasicInfo(instance(context))).thenResolve(basicInfo as any);
 
-        when(
-          execa("npm", ["view", "--json"], {
-            cwd: context.cwd,
-            env: context.env,
-          })
-        ).thenResolve({
-          stdout: JSON.stringify(basicInfo),
-        } as any);
-
-        const result = {
-          stdout: JSON.stringify({
-            registry: "https://registry.npmjs.org/",
-          }),
-        };
-        when(
-          execa("npm", ["config", "list", "--json"], {
-            env: context.env,
-            cwd: context.cwd,
-          })
-        ).thenResolve(result as any);
-
-        when(
-          logger.log("Registry used:", "https://registry.npmjs.org/")
-        ).thenReturn();
-
-        type Json = () => Promise<any>;
-        const json = mock<Json>();
-
-        const response: any = {
-          status: 200,
-          json: instance(json),
-        };
-
-        when(
-          fetch(
-            `https://registry.npmjs.org/${encodeURIComponent("some-package")}`
-          )
-        ).thenResolve(response);
-
-        const detailedInfo = {
-          name: "some-package",
-          version: "1.0.0",
+        const packageInfo: PackageInfo = {
+          name: "my-package",
           versions: {
             "1.0.0": {
-              name: "some-package",
+              name: "my-package",
               version: "1.0.0",
-            },
-            "2.0.0": {
-              name: "some-package",
-              version: "2.0.0",
             },
           },
         };
+        when(
+          npmApi.getInfo(basicInfo.name, instance(npmConfig), instance(context))
+        ).thenResolve(packageInfo);
 
-        when(json()).thenResolve(detailedInfo);
+        const info = await packageInfoRetriever.getInfo(
+          instance(npmConfig),
+          instance(context)
+        );
 
-        const packageInfo = await packageInfoRetriever.getInfo(context);
+        expect(info).toEqual(packageInfo);
 
         verifyAll();
-        expect(packageInfo).toBe(detailedInfo);
       });
     });
   });

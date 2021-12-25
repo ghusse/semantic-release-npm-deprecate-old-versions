@@ -14,6 +14,7 @@ import ConfigurationLoader from "./configuration-loader";
 import { PackageInfo } from "./interfaces/package-info.interface";
 import { ListActiveVersions } from "./list-active-versions";
 import { DeprecierState } from "./deprecier-state";
+import { Npm } from "./npm";
 
 export class OldVersionDeprecier {
   constructor(
@@ -23,6 +24,7 @@ export class OldVersionDeprecier {
     private readonly authentifier: Authentifier,
     private readonly configurationLoader: ConfigurationLoader,
     private readonly listActiveVersions: ListActiveVersions,
+    private readonly npm: Npm,
     private readonly deprecierState: DeprecierState
   ) {}
 
@@ -36,12 +38,11 @@ export class OldVersionDeprecier {
     pluginConfig: PluginConfig,
     context: Context & Config
   ): Promise<void> {
-    const { logger, cwd, env } = context;
-    this.deprecierState.packageInfo = await this.packageInfoRetriever.getInfo({
-      logger,
-      cwd,
-      env,
-    });
+    this.deprecierState.npmConfig = await this.npm.getConfig(context);
+    this.deprecierState.packageInfo = await this.packageInfoRetriever.getInfo(
+      this.deprecierState.npmConfig,
+      context
+    );
   }
 
   public async publish(
@@ -88,7 +89,10 @@ export class OldVersionDeprecier {
         ...depreciations.map((v) => v.version.format())
       );
 
-      await this.authentifier.authenticate(context);
+      await this.authentifier.authenticate(
+        this.deprecierState.npmConfig,
+        context
+      );
       for (const depreciation of depreciations) {
         await this.deprecier.deprecate(packageInfo, depreciation, context);
       }
