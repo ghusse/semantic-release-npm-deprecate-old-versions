@@ -12,18 +12,23 @@ import listActiveVersions from "./list-active-versions";
 import { DeprecierState } from "./deprecier-state";
 import fetch from "node-fetch";
 import execa from "execa";
+import { Npm } from "./npm";
+import { NpmApi } from "./npm-api";
+
+const npm = new Npm(execa);
 
 const oldVersionDeprecier = new OldVersionDeprecier(
-  new PackageInfoRetriever(fetch, execa),
+  new PackageInfoRetriever(new NpmApi(fetch), npm),
   new RuleApplier(new VersionForMessageFinder()),
-  new Deprecier(),
-  new Authentifier(),
+  new Deprecier(npm),
+  new Authentifier(npm),
   new ConfigurationLoader({
     deprecateAll: deprecateAll,
     supportLatest: supportLatest,
     supportPreReleaseIfNotReleased: supportPreReleaseIfNotReleased,
   }),
   listActiveVersions,
+  npm,
   new DeprecierState()
 );
 

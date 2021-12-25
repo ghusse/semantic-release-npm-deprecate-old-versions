@@ -1,53 +1,41 @@
-import execa from "execa";
+import { Config, Context } from "semantic-release";
 import { SemVer } from "semver";
-import { Logger } from "./interfaces/logger.interface";
 import { PackageInfo } from "./interfaces/package-info.interface";
+import { Npm } from "./npm";
+import { NpmError } from "./npm-error";
 
 export class Deprecier {
+  constructor(private readonly npm: Npm) {}
+
   public async deprecate(
     packageInfo: PackageInfo,
     { version, reason }: { version: SemVer; reason: string },
-    {
-      cwd,
-      env,
-      logger,
-    }: {
-      cwd?: string;
-      env: { [name: string]: string };
-      logger: Logger;
-    }
+    context: Context & Config
   ): Promise<void> {
     const realReason = reason || "Automatically deprecated";
 
     try {
-      await execa(
-        "npm",
-        [
-          "deprecate",
-          `${packageInfo.name}@${version.format()}`,
-          `${realReason}`,
-        ],
+      await this.npm.deprecate(
         {
-          cwd,
-          env,
-        }
+          name: packageInfo.name,
+          version: version.format(),
+          reason: realReason,
+        },
+        context
       );
+
+      context.logger.log("Deprecated version", version.format());
     } catch (error) {
-      if (error.stderr?.includes("npm ERR! code E422")) {
-        logger.log(
-          `Version ${version.format()} could not be deprecated, is it already deprecated?`
-        );
-      }
-      if (error.stderr?.includes("npm ERR! code E405")) {
-        logger.log(
+      const npmError = error as NpmError;
+
+      if (npmError.code === "E422" || npmError.code === "E405") {
+        context.logger.log(
           `Version ${version.format()} could not be deprecated, is it already deprecated?`
         );
       } else {
-        logger.error("Unexpected error", error);
+        context.logger.error("Unexpected error", error);
         throw error;
       }
     }
-
-    logger.log("Deprecated version", version.format());
   }
 }
