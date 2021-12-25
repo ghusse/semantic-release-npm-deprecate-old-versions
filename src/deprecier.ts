@@ -1,4 +1,4 @@
-import { execa } from "execa";
+import execa from "execa";
 import { SemVer } from "semver";
 import { Logger } from "./interfaces/logger.interface";
 import { PackageInfo } from "./interfaces/package-info.interface";

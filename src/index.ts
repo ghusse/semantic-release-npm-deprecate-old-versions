@@ -11,7 +11,7 @@ import { supportPreReleaseIfNotReleased } from "./rules/support-prerelease-if-no
 import listActiveVersions from "./list-active-versions";
 import { DeprecierState } from "./deprecier-state";
 import fetch from "node-fetch";
-import { execa } from "execa";
+import execa from "execa";
 
 const oldVersionDeprecier = new OldVersionDeprecier(
   new PackageInfoRetriever(fetch, execa),
