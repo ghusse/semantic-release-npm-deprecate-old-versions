@@ -1,5 +1,5 @@
 import { SemVer } from "semver";
-import { Action } from "./rule";
+import { Action } from "./interfaces/rule.interface";
 import { RuleApplier } from "./rule-applier";
 
 describe("rule-applier", () => {

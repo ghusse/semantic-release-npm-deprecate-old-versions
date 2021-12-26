@@ -1,47 +1,42 @@
-import execa from "execa";
-import { Logger } from "./logger";
-import { PackageInfo } from "./package-info";
-
-interface NpmError {
-  error: {
-    code: string;
-    summary: string;
-    detail: string;
-  };
-}
+import { Config, Context } from "semantic-release";
+import { NpmConfig } from "./interfaces/npm.interface";
+import {
+  PackageBasicInfo,
+  PackageInfo,
+} from "./interfaces/package-info.interface";
+import { Npm } from "./npm";
+import { NpmApi } from "./npm-api";
+import { NpmError } from "./npm-error";
 
 export class PackageInfoRetriever {
-  async getInfo({
-    cwd,
-    env,
-    logger,
-  }: {
-    cwd: string | undefined;
-    env: { [name: string]: string };
-    logger: Logger;
-  }): Promise<PackageInfo | undefined> {
+  constructor(private readonly npmApi: NpmApi, private readonly npm: Npm) {}
+
+  async getInfo(
+    npmConfig: NpmConfig,
+    context: Context & Config
+  ): Promise<PackageInfo | undefined> {
+    const basicInfo = await this.getBasicInfo(context);
+
+    if (!basicInfo) {
+      return undefined;
+    }
+
+    return this.npmApi.getInfo(basicInfo.name, npmConfig, context);
+  }
+
+  private async getBasicInfo(
+    context: Context
+  ): Promise<PackageBasicInfo | undefined> {
     try {
-      const result = await execa("npm", ["view", "--json"], {
-        cwd,
-        env,
-      });
-
-      const parsedResponse: PackageInfo = JSON.parse(result.stdout as string);
-
-      logger.log(`Versions detected:`, ...parsedResponse.versions);
-      return parsedResponse;
+      return await this.npm.getBasicInfo(context);
     } catch (e) {
-      try {
-        const parsed: NpmError = JSON.parse(e.stdout);
-        if (parsed.error.code === "E404") {
-          logger.log("This package has not been published yet");
-          return undefined;
-        }
-
-        throw e;
-      } catch (parsingError) {
-        throw e;
+      const npmError = e as NpmError;
+      if (npmError.code === "E404") {
+        context.logger.log("This package has not been published yet");
+        return undefined;
       }
+
+      throw e;
     }
   }
 }

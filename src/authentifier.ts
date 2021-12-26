@@ -1,23 +1,23 @@
-import execa from "execa";
-import { Logger } from "./logger";
+import { Config, Context } from "semantic-release";
+import { NpmConfig } from "./interfaces/npm.interface";
+import { Npm } from "./npm";
 
 export class Authentifier {
-  public async authentify({
-    cwd,
-    env,
-    logger,
-  }: {
-    cwd?: string;
-    env: { [name: string]: string };
-    logger: Logger;
-  }): Promise<void> {
+  constructor(private readonly npm: Npm) {}
+
+  public async authenticate(
+    npmConfig: NpmConfig,
+    context: Config & Context
+  ): Promise<void> {
+    const { env, logger } = context;
+
     if (!env.NPM_TOKEN) {
       throw new Error("NPM TOKEN needs to be set");
     }
-    await execa(
-      "npm",
-      ["config", "set", "//registry.npmjs.org/:_authToken", env.NPM_TOKEN],
-      { cwd, env }
+
+    await this.npm.authenticate(
+      { registry: npmConfig.registry, token: env.NPM_TOKEN },
+      context
     );
 
     logger.log("npm token set");
