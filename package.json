@@ -1,6 +1,6 @@
 {
   "name": "semantic-release-npm-deprecate-old-versions",
-  "version": "1.1.7",
+  "version": "1.2.0-alpha.1",
   "description": "A plugin for semantic-release, to automatically deprecate old versions on npm, based on a custom configuration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,13 +23,14 @@
   "license": "ISC",
   "dependencies": {
     "execa": "^4.1.0",
+    "node-fetch": "^2.6.6",
     "semver": "^7.3.5"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/git": "^9.0.1",
-    "@types/execa": "^2.0.0",
     "@types/jest": "^26.0.24",
+    "@types/node-fetch": "^2.5.12",
     "@types/semantic-release": "^17.2.3",
     "@types/semver": "^7.3.4",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
@@ -41,6 +42,7 @@
     "jest": "^26.6.3",
     "prettier": "^2.1.2",
     "semantic-release": "^17.4.7",
+    "strong-mock": "^7.3.0",
     "ts-jest": "^26.5.6",
     "typescript": "^4.0.3"
   },

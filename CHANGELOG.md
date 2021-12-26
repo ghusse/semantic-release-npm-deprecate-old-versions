@@ -1,3 +1,16 @@
+# [1.2.0-alpha.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.7...v1.2.0-alpha.1) (2021-12-25)
+
+
+### Bug Fixes
+
+* :bug: downgrade node-fetch to fix an error related to require ([#23](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/23)) ([804963c](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/804963c4d0e00d4d323c27ec80459291fd845874))
+* :bug: revert the upgrade of execa to fix an error related to require ([#22](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/22)) ([a2f3fbe](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/a2f3fbe894f148bcde8cfb9e7f942b52a7cac80c))
+
+
+### Features
+
+* :sparkles: only deprecate active versions ([#20](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/20)) ([dbe0bc1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/dbe0bc1cc5c7d17c5ee2b858d1be86feec2d5347))
+
 ## [1.1.7](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.1.6...v1.1.7) (2021-12-22)
 
 

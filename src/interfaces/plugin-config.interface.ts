@@ -1,4 +1,4 @@
-import { RuleWithAppliedOptions } from "./rule";
+import { RuleWithAppliedOptions } from "./rule.interface";
 
 export enum SupportedDefaultRule {
   deprecateAll = "deprecateAll",

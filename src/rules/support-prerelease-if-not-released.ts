@@ -1,5 +1,5 @@
 import { SemVer } from "semver";
-import { Action, Rule, RuleResult } from "../rule";
+import { Action, Rule, RuleResult } from "../interfaces/rule.interface";
 
 const DEFAULT_OPTIONS: SupportPreReleaseOptions = {
   numberOfPreReleases: 1,

@@ -3,7 +3,11 @@ import {
   RuleApplicationResultWithOptionalReason,
 } from "./rule-application-result";
 import semverRSort from "semver/functions/rsort";
-import { Action, RuleResult, RuleWithAppliedOptions } from "./rule";
+import {
+  Action,
+  RuleResult,
+  RuleWithAppliedOptions,
+} from "./interfaces/rule.interface";
 import { SemVer } from "semver";
 import VersionForMessageFinder from "./version-for-message-finder";
 

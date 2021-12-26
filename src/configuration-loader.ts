@@ -1,5 +1,8 @@
-import { PluginConfig, SupportedDefaultRule } from "./plugin-config";
-import { Rule, RuleWithAppliedOptions } from "./rule";
+import {
+  PluginConfig,
+  SupportedDefaultRule,
+} from "./interfaces/plugin-config.interface";
+import { Rule, RuleWithAppliedOptions } from "./interfaces/rule.interface";
 import { SupportLatestOptions } from "./rules/support-latest";
 import { SupportPreReleaseOptions } from "./rules/support-prerelease-if-not-released";
 
