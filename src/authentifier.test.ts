@@ -35,7 +35,6 @@ describe("Authentifier", () => {
         npm.authenticate(
           {
             registry: npmConfig.registry,
-            token: "token",
           },
           instance(context)
         )
