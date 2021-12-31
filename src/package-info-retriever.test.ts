@@ -109,6 +109,52 @@ describe("PackageInfoRetriever", () => {
 
         verifyAll();
       });
+
+      it("should add the version from basic info when the api did not return it", async () => {
+        const { packageInfoRetriever, npmApi, npm } = setup();
+        const npmConfig = mock<NpmConfig>();
+        const context = mock<Context & Config>();
+
+        const basicInfo = {
+          name: "my-package",
+          version: "1.1.0",
+        };
+        when(npm.getBasicInfo(instance(context))).thenResolve(basicInfo as any);
+
+        const packageInfo: PackageInfo = {
+          name: "my-package",
+          versions: {
+            "1.0.0": {
+              name: "my-package",
+              version: "1.0.0",
+            },
+          },
+        };
+        when(
+          npmApi.getInfo(basicInfo.name, instance(npmConfig), instance(context))
+        ).thenResolve(packageInfo);
+
+        const info = await packageInfoRetriever.getInfo(
+          instance(npmConfig),
+          instance(context)
+        );
+
+        expect(info).toEqual({
+          name: "my-package",
+          versions: {
+            "1.0.0": {
+              name: "my-package",
+              version: "1.0.0",
+            },
+            "1.1.0": {
+              name: "my-package",
+              version: "1.1.0",
+            },
+          },
+        });
+
+        verifyAll();
+      });
     });
   });
 });
