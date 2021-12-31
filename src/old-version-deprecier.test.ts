@@ -79,15 +79,9 @@ describe("OldVersionDeprecier", () => {
   });
 
   describe("prepare", () => {
-    it("should retrieve package info", async () => {
-      const {
-        oldVersionDeprecier,
-        packageInfoRetriever,
-        deprecierState,
-        npm,
-      } = setup();
+    it("should retrieve the config", async () => {
+      const { deprecierState, npm, oldVersionDeprecier } = setup();
 
-      const config: PluginConfig = { debug: true };
       const logger = mock<Logger>();
       const context: Context & Config = {
         logger: instance(logger),
@@ -101,37 +95,34 @@ describe("OldVersionDeprecier", () => {
 
       when(npm.getConfig(context)).thenResolve(npmConfig);
 
-      const packageInfo: PackageInfo = {
-        name: "foo",
-        versions: {
-          "1.0.0": {
-            name: "foo",
-            version: "1.0.0",
-          },
-        },
-      };
+      await oldVersionDeprecier.prepare({}, context);
 
-      when(packageInfoRetriever.getInfo(npmConfig, context)).thenResolve(
-        packageInfo
-      );
-
-      await oldVersionDeprecier.prepare(config, context);
-
-      verify(packageInfoRetriever);
-      expect(deprecierState.packageInfo).toBe(packageInfo);
       expect(deprecierState.npmConfig).toBe(npmConfig);
     });
   });
 
   describe("publish", () => {
     it("should not do anything if there is no package info", async () => {
-      const { oldVersionDeprecier, listActiveVersions } = setup();
+      const {
+        oldVersionDeprecier,
+        listActiveVersions,
+        packageInfoRetriever,
+        deprecierState,
+      } = setup();
 
       const logger = mock<Logger>();
       const context: Config & Context = {
         logger: instance(logger),
         env: {},
       };
+
+      deprecierState.npmConfig = {
+        registry: "registry",
+      };
+
+      when(
+        packageInfoRetriever.getInfo(deprecierState.npmConfig, context)
+      ).thenResolve(undefined);
 
       when(
         logger.log("This project does not seem to be a npm package")
@@ -151,9 +142,10 @@ describe("OldVersionDeprecier", () => {
         ruleApplier,
         authentifier,
         deprecier,
+        packageInfoRetriever,
       } = setup();
 
-      deprecierState.packageInfo = {
+      const packageInfo = {
         name: "foo",
         versions: {
           "1.0.0": {
@@ -175,12 +167,18 @@ describe("OldVersionDeprecier", () => {
         registry: "registry",
       };
 
-      when(listActiveVersions(deprecierState.packageInfo)).thenReturn([
-        "1.0.0",
-        "2.0.0",
-      ]);
-
       const logger = mock<Logger>();
+
+      const context: Config & Context = {
+        logger: instance(logger),
+        env: {},
+      };
+
+      when(
+        packageInfoRetriever.getInfo(deprecierState.npmConfig, context)
+      ).thenResolve(packageInfo);
+
+      when(listActiveVersions(packageInfo)).thenReturn(["1.0.0", "2.0.0"]);
 
       when(logger.log("Active versions: 1.0.0, 2.0.0")).thenReturn();
 
@@ -205,18 +203,13 @@ describe("OldVersionDeprecier", () => {
 
       when(logger.log("Versions to deprecate", "1.0.0")).thenReturn();
 
-      const context: Config & Context = {
-        logger: instance(logger),
-        env: {},
-      };
-
       when(
         authentifier.authenticate(deprecierState.npmConfig, context)
       ).thenResolve();
       when(authentifier.checkAuthentication(context)).thenResolve();
       when(
         deprecier.deprecate(
-          deprecierState.packageInfo,
+          packageInfo,
           actions[0] as DepreciationResult,
           context
         )
@@ -233,9 +226,10 @@ describe("OldVersionDeprecier", () => {
         oldVersionDeprecier,
         listActiveVersions,
         ruleApplier,
+        packageInfoRetriever,
       } = setup();
 
-      deprecierState.packageInfo = {
+      const packageInfo = {
         name: "foo",
         versions: {
           "1.0.0": {
@@ -253,16 +247,21 @@ describe("OldVersionDeprecier", () => {
         registry: "registry",
       };
 
+      const logger = mock<Logger>();
+      const context: Config & Context = {
+        logger: instance(logger),
+        env: {},
+      };
+
+      when(
+        packageInfoRetriever.getInfo(deprecierState.npmConfig, context)
+      ).thenResolve(packageInfo);
+
       const rule = mock<RuleWithAppliedOptions>();
 
       deprecierState.rules = [instance(rule)];
 
-      when(listActiveVersions(deprecierState.packageInfo)).thenReturn([
-        "1.0.0",
-        "2.0.0",
-      ]);
-
-      const logger = mock<Logger>();
+      when(listActiveVersions(packageInfo)).thenReturn(["1.0.0", "2.0.0"]);
 
       when(logger.log("Active versions: 1.0.0, 2.0.0")).thenReturn();
 
@@ -286,11 +285,6 @@ describe("OldVersionDeprecier", () => {
 
       when(logger.log("No version to deprecate")).thenReturn();
 
-      const context: Config & Context = {
-        logger: instance(logger),
-        env: {},
-      };
-
       await oldVersionDeprecier.publish({}, context);
 
       verifyAll();
@@ -298,23 +292,13 @@ describe("OldVersionDeprecier", () => {
   });
 
   it("should throw an error if the npm config could not be retrieved", async () => {
-    const { oldVersionDeprecier, deprecierState } = setup();
+    const { oldVersionDeprecier } = setup();
 
     const logger = mock<Logger>();
     const context: Context & Config = {
       logger: instance(logger),
       cwd: "here",
       env: {},
-    };
-
-    deprecierState.packageInfo = {
-      name: "foo",
-      versions: {
-        "1.0.0": {
-          name: "foo",
-          version: "1.0.0",
-        },
-      },
     };
 
     await expect(oldVersionDeprecier.publish({}, context)).rejects.toThrow(
