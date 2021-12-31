@@ -38,6 +38,10 @@ export class Npm {
     );
   }
 
+  public async whoAmI(context: Context & Config): Promise<void> {
+    await this.runJsonNpm(["whoami"], context);
+  }
+
   public async deprecate(
     {
       name,
