@@ -22,4 +22,16 @@ export class Authentifier {
 
     logger.log("npm token set");
   }
+
+  public async checkAuthentication(context: Config & Context): Promise<void> {
+    try {
+      await this.npm.whoAmI(context);
+    } catch (e) {
+      if (e.code === "ENEEDAUTH") {
+        throw new Error("Authentication is not correct");
+      }
+
+      throw e;
+    }
+  }
 }

@@ -55,6 +55,29 @@ describe("npm", () => {
     });
   });
 
+  describe("whoAmI", () => {
+    it("should check the authentication", async () => {
+      const { execa, npm } = setup();
+      const context = mock<Context & Config>();
+      const env = {
+        NPM_TOKEN: "token",
+      };
+      when(context.env).thenReturn(env);
+      when(context.cwd).thenReturn("cwd");
+
+      when(
+        execa("npm", ["whoami", "--json"], {
+          cwd: "cwd",
+          env,
+        })
+      ).thenResolve(undefined as any);
+
+      await npm.whoAmI(instance(context));
+
+      verifyAll();
+    });
+  });
+
   describe("deprecate", () => {
     it("should deprecate the given version", async () => {
       const { execa, npm } = setup();
