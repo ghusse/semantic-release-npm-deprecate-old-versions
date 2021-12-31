@@ -1,3 +1,10 @@
+# [1.3.0-alpha.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.2.2...v1.3.0-alpha.1) (2021-12-31)
+
+
+### Features
+
+* :lock: check that authentication is correctly set up before publishing ([#30](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/30)) ([883fd07](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/883fd0730249ddc87687b0dff3a073d0e96aef91))
+
 ## [1.2.2](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.2.1...v1.2.2) (2021-12-31)
 
 
