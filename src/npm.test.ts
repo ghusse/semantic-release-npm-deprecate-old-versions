@@ -112,6 +112,54 @@ describe("npm", () => {
 
       verifyAll();
     });
+
+    it("should return a NpmError when the error is dumped in stderr with some prefix", async () => {
+      const { execa, npm } = setup();
+      const context = mock<Context & Config>();
+      const env = {
+        NPM_TOKEN: "token",
+      };
+      when(context.env).thenReturn(env);
+      when(context.cwd).thenReturn("cwd");
+
+      const error: any = new Error("error");
+      error.stdout = "";
+      error.stderr =
+        "npm ERR! code E404\n" +
+        "npm ERR! 404 Not Found - PUT https://registry.npmjs.org/semantic-release-npm-deprecate-old-versions - Not found\n" +
+        "npm ERR! 404 \n" +
+        "npm ERR! 404  'semantic-release-npm-deprecate-old-versions@1.2.0-beta.1' is not in this registry.\n" +
+        "npm ERR! 404 You should bug the author to publish it (or use the name yourself!)\n" +
+        "npm ERR! 404 \n" +
+        "npm ERR! 404 Note that you can also install from a\n" +
+        "npm ERR! 404 tarball, folder, http url, or git url.\n" +
+        "{\n" +
+        '  "error": {\n' +
+        '    "code": "E404",\n' +
+        '    "summary": "Not Found",\n' +
+        `    "detail": "\\n 'semantic-release-npm-deprecate-old-versions@1.2.0-beta.1' is not in this registry.\\nYou should bug the author to publish it (or use the name yourself!)\\n\\nNote that you can also install from a\\ntarball, folder, http url, or git url."\n` +
+        "  }\n" +
+        "}\n" +
+        "\n" +
+        "npm ERR! A complete log of this run can be found in:\n" +
+        "npm ERR!     /home/runner/.npm/_logs/2021-12-26T12_29_13_075Z-debug.log";
+
+      when(
+        execa("npm", ["deprecate", "name@version", "reason", "--json"], {
+          cwd: "cwd",
+          env,
+        })
+      ).thenReject(error);
+
+      await expect(
+        npm.deprecate(
+          { name: "name", version: "version", reason: "reason" },
+          instance(context)
+        )
+      ).rejects.toEqual(new NpmError("E404", "Not Found", error));
+
+      verifyAll();
+    });
   });
 
   describe("getBasicInfo", () => {

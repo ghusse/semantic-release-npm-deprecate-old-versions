@@ -5,6 +5,17 @@ import { NpmConfig } from "./interfaces/npm.interface";
 import { PackageBasicInfo } from "./interfaces/package-info.interface";
 import { NpmError } from "./npm-error";
 
+function tryParse(content: string): ParsedNpmError | null {
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    return null;
+  }
+}
+function removeNpmText(content: string): string {
+  return content.replace(/^npm ERR!.*$/gm, "");
+}
+
 interface ParsedNpmError {
   error: {
     code: string;
@@ -76,9 +87,20 @@ export class Npm {
       return await this.execa("npm", [...args, "--json"], { cwd, env });
     } catch (e) {
       if (e.stdout) {
-        const parsed: ParsedNpmError = JSON.parse(e.stdout);
-        throw new NpmError(parsed.error.code, parsed.error.summary, e);
+        const parsed = tryParse(e.stdout);
+        if (parsed) {
+          throw new NpmError(parsed.error.code, parsed.error.summary, e);
+        }
       }
+
+      if (e.stderr) {
+        const parsed = tryParse(removeNpmText(e.stderr));
+
+        if (parsed) {
+          throw new NpmError(parsed.error.code, parsed.error.summary, e);
+        }
+      }
+
       throw e;
     }
   }
