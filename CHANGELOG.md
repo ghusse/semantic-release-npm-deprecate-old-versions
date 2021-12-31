@@ -1,3 +1,10 @@
+# [1.3.0-alpha.2](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.3.0-alpha.1...v1.3.0-alpha.2) (2021-12-31)
+
+
+### Bug Fixes
+
+* :lock: don't write the auth token in npmrc ([#31](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/31)) ([7669fce](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/7669fce5aee784788ddd480151af63519902fd8b))
+
 # [1.3.0-alpha.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.2.2...v1.3.0-alpha.1) (2021-12-31)
 
 
