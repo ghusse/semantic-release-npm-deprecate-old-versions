@@ -28,14 +28,18 @@ export class Npm {
   constructor(private readonly execa: Execa) {}
 
   public async authenticate(
-    { registry, token }: { registry: string; token: string },
+    { registry }: { registry: string },
     context: Context & Config
   ): Promise<void> {
-    const registryUrl = registry.replace(/^https?:/, "");
+    const registryUrl = registry.replace(/^https?:/, "").replace(/\/$/, "");
     await this.runJsonNpm(
-      ["config", "set", `${registryUrl}/:_authToken`, token],
+      ["config", "set", `${registryUrl}/:_authToken`, "${NPM_TOKEN}"],
       context
     );
+  }
+
+  public async whoAmI(context: Context & Config): Promise<void> {
+    await this.runJsonNpm(["whoami"], context);
   }
 
   public async deprecate(

@@ -4,6 +4,7 @@ import { Authentifier } from "./authentifier";
 import { Logger } from "./interfaces/logger.interface";
 import { NpmConfig } from "./interfaces/npm.interface";
 import { Npm } from "./npm";
+import { NpmError } from "./npm-error";
 
 describe("Authentifier", () => {
   function setup() {
@@ -34,7 +35,6 @@ describe("Authentifier", () => {
         npm.authenticate(
           {
             registry: npmConfig.registry,
-            token: "token",
           },
           instance(context)
         )
@@ -65,6 +65,49 @@ describe("Authentifier", () => {
       ).rejects.toThrow("NPM TOKEN needs to be set");
 
       verifyAll();
+    });
+  });
+
+  describe("checkAuthentication", () => {
+    it("should check the authentication", async () => {
+      const { authentifier, npm } = setup();
+
+      const context = mock<Config & Context>();
+
+      when(npm.whoAmI(instance(context))).thenResolve();
+
+      await authentifier.checkAuthentication(instance(context));
+
+      verifyAll();
+    });
+
+    it("should catch ENEEDAUTH errors and rethrow an error", async () => {
+      const { authentifier, npm } = setup();
+
+      const context = mock<Config & Context>();
+
+      when(npm.whoAmI(instance(context))).thenReject(
+        new NpmError("ENEEDAUTH", "Authentication is required.", new Error())
+      );
+
+      await expect(
+        authentifier.checkAuthentication(instance(context))
+      ).rejects.toThrow("Authentication is not correct");
+
+      verifyAll();
+    });
+
+    it("should rethrow unexpected errors", async () => {
+      const { authentifier, npm } = setup();
+
+      const context = mock<Config & Context>();
+
+      const error = new Error();
+      when(npm.whoAmI(instance(context))).thenReject(error);
+
+      await expect(
+        authentifier.checkAuthentication(instance(context))
+      ).rejects.toEqual(error);
     });
   });
 });

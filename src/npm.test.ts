@@ -36,7 +36,7 @@ describe("npm", () => {
             "config",
             "set",
             "//registry.npmjs.org/:_authToken",
-            "token",
+            "${NPM_TOKEN}",
             "--json",
           ],
           {
@@ -47,9 +47,32 @@ describe("npm", () => {
       ).thenResolve(undefined as any);
 
       await npm.authenticate(
-        { registry: "https://registry.npmjs.org", token: "token" },
+        { registry: "https://registry.npmjs.org/" },
         instance(context)
       );
+
+      verifyAll();
+    });
+  });
+
+  describe("whoAmI", () => {
+    it("should check the authentication", async () => {
+      const { execa, npm } = setup();
+      const context = mock<Context & Config>();
+      const env = {
+        NPM_TOKEN: "token",
+      };
+      when(context.env).thenReturn(env);
+      when(context.cwd).thenReturn("cwd");
+
+      when(
+        execa("npm", ["whoami", "--json"], {
+          cwd: "cwd",
+          env,
+        })
+      ).thenResolve(undefined as any);
+
+      await npm.whoAmI(instance(context));
 
       verifyAll();
     });

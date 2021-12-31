@@ -95,6 +95,9 @@ export class OldVersionDeprecier {
         this.deprecierState.npmConfig!,
         context
       );
+
+      await this.authentifier.checkAuthentication(context);
+
       for (const depreciation of depreciations) {
         await this.deprecier.deprecate(packageInfo, depreciation, context);
       }

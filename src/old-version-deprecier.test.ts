@@ -206,6 +206,7 @@ describe("OldVersionDeprecier", () => {
       when(
         authentifier.authenticate(deprecierState.npmConfig, context)
       ).thenResolve();
+      when(authentifier.checkAuthentication(context)).thenResolve();
       when(
         deprecier.deprecate(
           packageInfo,

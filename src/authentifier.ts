@@ -15,11 +15,20 @@ export class Authentifier {
       throw new Error("NPM TOKEN needs to be set");
     }
 
-    await this.npm.authenticate(
-      { registry: npmConfig.registry, token: env.NPM_TOKEN },
-      context
-    );
+    await this.npm.authenticate({ registry: npmConfig.registry }, context);
 
     logger.log("npm token set");
+  }
+
+  public async checkAuthentication(context: Config & Context): Promise<void> {
+    try {
+      await this.npm.whoAmI(context);
+    } catch (e) {
+      if (e.code === "ENEEDAUTH") {
+        throw new Error("Authentication is not correct");
+      }
+
+      throw e;
+    }
   }
 }
