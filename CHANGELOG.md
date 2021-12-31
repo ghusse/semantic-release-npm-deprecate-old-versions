@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.2.1...v1.2.2) (2021-12-31)
+
+
+### Bug Fixes
+
+* :bug: ignore 404s when deprecating a version ([#29](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/29)) ([de58be1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/de58be19ecc41d9a2fd7a5df75e6766a1712e722))
+
 ## [1.2.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.2.0...v1.2.1) (2021-12-26)
 
 
