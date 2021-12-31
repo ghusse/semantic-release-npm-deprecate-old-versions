@@ -291,23 +291,13 @@ describe("OldVersionDeprecier", () => {
   });
 
   it("should throw an error if the npm config could not be retrieved", async () => {
-    const { oldVersionDeprecier, deprecierState } = setup();
+    const { oldVersionDeprecier } = setup();
 
     const logger = mock<Logger>();
     const context: Context & Config = {
       logger: instance(logger),
       cwd: "here",
       env: {},
-    };
-
-    deprecierState.packageInfo = {
-      name: "foo",
-      versions: {
-        "1.0.0": {
-          name: "foo",
-          version: "1.0.0",
-        },
-      },
     };
 
     await expect(oldVersionDeprecier.publish({}, context)).rejects.toThrow(
