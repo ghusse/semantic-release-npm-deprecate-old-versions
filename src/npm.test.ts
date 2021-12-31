@@ -36,7 +36,7 @@ describe("npm", () => {
             "config",
             "set",
             "//registry.npmjs.org/:_authToken",
-            "token",
+            "${NPM_TOKEN}",
             "--json",
           ],
           {
@@ -47,7 +47,7 @@ describe("npm", () => {
       ).thenResolve(undefined as any);
 
       await npm.authenticate(
-        { registry: "https://registry.npmjs.org", token: "token" },
+        { registry: "https://registry.npmjs.org/" },
         instance(context)
       );
 

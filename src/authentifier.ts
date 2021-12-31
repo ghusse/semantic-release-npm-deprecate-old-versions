@@ -15,10 +15,7 @@ export class Authentifier {
       throw new Error("NPM TOKEN needs to be set");
     }
 
-    await this.npm.authenticate(
-      { registry: npmConfig.registry, token: env.NPM_TOKEN },
-      context
-    );
+    await this.npm.authenticate({ registry: npmConfig.registry }, context);
 
     logger.log("npm token set");
   }
