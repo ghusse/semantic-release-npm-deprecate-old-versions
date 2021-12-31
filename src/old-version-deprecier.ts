@@ -39,10 +39,6 @@ export class OldVersionDeprecier {
     context: Context & Config
   ): Promise<void> {
     this.deprecierState.npmConfig = await this.npm.getConfig(context);
-    this.deprecierState.packageInfo = await this.packageInfoRetriever.getInfo(
-      this.deprecierState.npmConfig,
-      context
-    );
   }
 
   public async publish(
@@ -50,10 +46,6 @@ export class OldVersionDeprecier {
     context: Context & Config
   ): Promise<void> {
     const { logger } = context;
-    if (!this.deprecierState.packageInfo) {
-      logger.log("This project does not seem to be a npm package");
-      return;
-    }
 
     if (!this.deprecierState.npmConfig) {
       throw new Error(
@@ -61,9 +53,17 @@ export class OldVersionDeprecier {
       );
     }
 
-    const activeVersions = this.listActiveVersions(
-      this.deprecierState.packageInfo
+    const packageInfo = await this.packageInfoRetriever.getInfo(
+      this.deprecierState.npmConfig,
+      context
     );
+
+    if (!packageInfo) {
+      logger.log("This project does not seem to be a npm package");
+      return;
+    }
+
+    const activeVersions = this.listActiveVersions(packageInfo);
 
     logger.log(`Active versions: ${activeVersions.join(", ")}`);
 
@@ -73,11 +73,7 @@ export class OldVersionDeprecier {
       this.deprecierState.rules
     );
 
-    await this.deprecate(
-      actionsOnVersions,
-      this.deprecierState.packageInfo,
-      context
-    );
+    await this.deprecate(actionsOnVersions, packageInfo, context);
   }
 
   private async deprecate(
