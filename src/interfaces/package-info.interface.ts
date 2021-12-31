@@ -1,5 +1,6 @@
 export interface PackageBasicInfo {
   name: string;
+  version: string;
   versions: string[];
 }
 
