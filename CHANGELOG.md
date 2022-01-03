@@ -1,3 +1,10 @@
+## [1.3.1-alpha.1](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.3.0...v1.3.1-alpha.1) (2022-01-03)
+
+
+### Bug Fixes
+
+* :bug: list all versions, including the newly published one when computing deprecations ([#34](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/34)) ([24e3067](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/24e3067eea8fb96c0cdc06d173ce65aff5c06fe6))
+
 # [1.3.0](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.2.3...v1.3.0) (2021-12-31)
 
 
