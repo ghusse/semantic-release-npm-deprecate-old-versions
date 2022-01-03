@@ -21,7 +21,26 @@ export class PackageInfoRetriever {
       return undefined;
     }
 
-    return this.npmApi.getInfo(basicInfo.name, npmConfig, context);
+    const completeInfo = await this.npmApi.getInfo(
+      basicInfo.name,
+      npmConfig,
+      context
+    );
+
+    if (completeInfo && !completeInfo.versions[basicInfo.version]) {
+      return {
+        ...completeInfo,
+        versions: {
+          ...completeInfo.versions,
+          [basicInfo.version]: {
+            name: basicInfo.name,
+            version: basicInfo.version,
+          },
+        },
+      };
+    }
+
+    return completeInfo;
   }
 
   private async getBasicInfo(

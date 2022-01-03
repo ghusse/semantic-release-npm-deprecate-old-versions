@@ -197,6 +197,7 @@ describe("npm", () => {
 
       const info: PackageBasicInfo = {
         name: "name",
+        version: "1.0.0",
         versions: ["1.0.0"],
       };
 
