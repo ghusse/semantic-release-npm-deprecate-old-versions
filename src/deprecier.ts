@@ -32,7 +32,7 @@ export class Deprecier {
         context.logger.log(
           `Version ${version.format()} could not be deprecated, is it already deprecated?`
         );
-      } else if (npmError.code === "E404") {
+      } else if (["E404", "E400"].includes(npmError.code)) {
         context.logger.log(
           `Version ${version.format()} could not be deprecated, it has not been found. It could be a bug of the registry.`
         );
