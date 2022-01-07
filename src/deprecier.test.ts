@@ -184,6 +184,48 @@ describe("Deprecier", () => {
       verifyAll();
     });
 
+    it("should log a message when a 400 is thrown", async () => {
+      const { deprecier, npm } = setup();
+
+      const packageInfo: PackageInfo = {
+        name: "name",
+        versions: {
+          "1.0.0": {
+            version: "1.0.0",
+            name: "name",
+          },
+        },
+      };
+
+      const context = mock<Context & Config>();
+
+      const logger = mock<Logger>();
+      when(
+        logger.log(
+          "Version 1.0.0 could not be deprecated, it has not been found. It could be a bug of the registry."
+        )
+      ).thenReturn(undefined);
+
+      when(context.logger).thenReturn(instance(logger));
+
+      const reason = "reason";
+
+      when(
+        npm.deprecate(
+          { name: "name", version: "1.0.0", reason },
+          instance(context)
+        )
+      ).thenReject(new NpmError("E400", "", new Error()));
+
+      await deprecier.deprecate(
+        packageInfo,
+        { version: new SemVer("1.0.0"), reason },
+        instance(context)
+      );
+
+      verifyAll();
+    });
+
     it("should log and rethrow unexpected errors", async () => {
       const { deprecier, npm } = setup();
 
