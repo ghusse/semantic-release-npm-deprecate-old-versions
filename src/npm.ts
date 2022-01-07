@@ -51,7 +51,7 @@ export class Npm {
     context: Context & Config
   ): Promise<void> {
     await this.runJsonNpm(
-      ["deprecate", `${name}@${version}`, `${reason}`],
+      ["deprecate", `${name}@"${version}"`, `${reason}`],
       context
     );
   }
