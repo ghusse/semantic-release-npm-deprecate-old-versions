@@ -1,3 +1,12 @@
+## [1.3.2](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.3.1...v1.3.2) (2022-01-07)
+
+
+### Bug Fixes
+
+* :bug: don't quotes versions, only ignore 400 errors ([#39](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/39)) ([638dbba](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/638dbba62e7eb7a47c0b2417c31a790f23503c00))
+* :bug: don't quotes versions, only ignore 400 errors ([#40](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/40)) ([1c14322](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/1c143220c4b7fb9899b40debb0d01caf10c2c868))
+* :bug: quote the version number to deprecate to avoid errors 400 returned by npm ([#36](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/issues/36)) ([85a3fd7](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/commit/85a3fd73225f771cf10f7e8f9a2b6c03a015b58b))
+
 ## [1.3.2-beta.3](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.3.2-beta.2...v1.3.2-beta.3) (2022-01-07)
 
 
