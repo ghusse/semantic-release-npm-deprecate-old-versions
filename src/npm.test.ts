@@ -89,7 +89,7 @@ describe("npm", () => {
       when(context.cwd).thenReturn("cwd");
 
       when(
-        execa("npm", ["deprecate", 'name@"version"', "reason", "--json"], {
+        execa("npm", ["deprecate", "name@version", "reason", "--json"], {
           cwd: "cwd",
           env,
         })
@@ -120,7 +120,7 @@ describe("npm", () => {
         },
       });
       when(
-        execa("npm", ["deprecate", 'name@"version"', "reason", "--json"], {
+        execa("npm", ["deprecate", "name@version", "reason", "--json"], {
           cwd: "cwd",
           env,
         })
@@ -168,7 +168,7 @@ describe("npm", () => {
         "npm ERR!     /home/runner/.npm/_logs/2021-12-26T12_29_13_075Z-debug.log";
 
       when(
-        execa("npm", ["deprecate", 'name@"version"', "reason", "--json"], {
+        execa("npm", ["deprecate", "name@version", "reason", "--json"], {
           cwd: "cwd",
           env,
         })
