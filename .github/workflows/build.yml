@@ -1,10 +1,10 @@
 name: CI
-on: 
+on:
   push:
-    branches-ignore:
-      - 'main'
-      - 'alpha'
-      - 'beta'
+    branches:
+      - main
+      - alpha
+      - beta
   pull_request:
 jobs:
   test:
