@@ -1,6 +1,6 @@
 {
   "name": "semantic-release-npm-deprecate-old-versions",
-  "version": "1.3.2-beta.2",
+  "version": "1.3.2-beta.3",
   "description": "A plugin for semantic-release, to automatically deprecate old versions on npm, based on a custom configuration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
