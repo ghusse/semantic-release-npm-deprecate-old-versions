@@ -1,3 +1,5 @@
+## [1.3.3](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.3.2...v1.3.3) (2022-05-17)
+
 ## [1.3.2](https://github.com/ghusse/semantic-release-npm-deprecate-old-versions/compare/v1.3.1...v1.3.2) (2022-01-07)
 
 
