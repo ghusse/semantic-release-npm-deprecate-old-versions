@@ -1,6 +1,7 @@
 import { Config, Context } from "semantic-release";
 import { NpmConfig } from "./interfaces/npm.interface";
 import { Npm } from "./npm";
+import { NpmError } from "./npm-error";
 
 export class Authentifier {
   constructor(private readonly npm: Npm) {}
@@ -24,7 +25,7 @@ export class Authentifier {
     try {
       await this.npm.whoAmI(context);
     } catch (e) {
-      if (e.code === "ENEEDAUTH") {
+      if ((e as NpmError).code === "ENEEDAUTH") {
         throw new Error("Authentication is not correct");
       }
 
