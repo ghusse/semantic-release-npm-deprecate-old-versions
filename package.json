@@ -30,7 +30,7 @@
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@types/jest": "^27.5.1",
-    "@types/node-fetch": "^2.5.12",
+    "@types/node-fetch": "^2.6.1",
     "@types/semantic-release": "^17.2.3",
     "@types/semver": "^7.3.4",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
