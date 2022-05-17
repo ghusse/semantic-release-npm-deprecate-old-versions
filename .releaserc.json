@@ -9,7 +9,7 @@
     [
       "@semantic-release/commit-analyzer", {
         "releaseRules": [
-          { "scope": "force-release", "release": "patch" },
+          { "scope": "force-release", "release": "patch" }
         ]
       }
     ],
