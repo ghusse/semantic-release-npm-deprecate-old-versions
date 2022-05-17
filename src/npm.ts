@@ -1,4 +1,4 @@
-import { ExecaReturnValue } from "execa";
+import { ExecaError, ExecaReturnValue } from "execa";
 import { Config, Context } from "semantic-release";
 import { Execa } from "./interfaces/execa.interface";
 import { NpmConfig } from "./interfaces/npm.interface";
@@ -90,18 +90,26 @@ export class Npm {
     try {
       return await this.execa("npm", [...args, "--json"], { cwd, env });
     } catch (e) {
-      if (e.stdout) {
-        const parsed = tryParse(e.stdout);
+      if ((e as ExecaError).stdout) {
+        const parsed = tryParse((e as ExecaError).stdout);
         if (parsed) {
-          throw new NpmError(parsed.error.code, parsed.error.summary, e);
+          throw new NpmError(
+            parsed.error.code,
+            parsed.error.summary,
+            e as Error
+          );
         }
       }
 
-      if (e.stderr) {
-        const parsed = tryParse(removeNpmText(e.stderr));
+      if ((e as ExecaError).stderr) {
+        const parsed = tryParse(removeNpmText((e as ExecaError).stderr));
 
         if (parsed) {
-          throw new NpmError(parsed.error.code, parsed.error.summary, e);
+          throw new NpmError(
+            parsed.error.code,
+            parsed.error.summary,
+            e as Error
+          );
         }
       }
 
